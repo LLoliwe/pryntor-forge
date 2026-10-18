@@ -3,15 +3,40 @@
  * Supplied HTML only: no fetching, crawling, telemetry, keys or paid API calls.
  */
 import { readFile, lstat } from 'node:fs/promises';
+import { isIP } from 'node:net';
 import { pathToFileURL } from 'node:url';
 
 export const LIMITS = Object.freeze({bytesPerPage: 2 * 1024 * 1024, batchPages: 16, headings: 32, links: 256, urlLength: 2048});
+
+/** Filter known non-public IP literals and local hostnames from untrusted links.
+ * This is NOT a DNS-resolution or SSRF-safe fetch authorisation policy. */
+function publicHostname(value) {
+  const h=String(value).toLowerCase().replace(/^\\[|\\]$/g,'').replace(/\\.$/,'');
+  if (!h || h==='localhost' || h.endsWith('.localhost') || h.endsWith('.local') ||
+      h.endsWith('.internal') || h.endsWith('.home.arpa')) return false;
+  const ip=isIP(h);
+  if (ip===4) {
+    const [a,b,c]=h.split('.').map(Number);
+    if (a===0||a===10||a===127||a>=224||a===255||
+        (a===100&&b>=64&&b<=127)||(a===169&&b===254)||
+        (a===172&&b>=16&&b<=31)||(a===192&&(b===168||b===0||b===0))||
+        (a===198&&(b===18||b===19))) return false;
+    if ((a===192&&b===0&&c===2)||(a===198&&b===51&&c===100)||
+        (a===203&&b===0&&c===113)) return false;
+  }
+  if (ip===6) {
+    // Includes loopback, unspecified, link-local, ULA, multicast and all IPv4-mapped literals.
+    if (h==='::'||h==='::1'||h.startsWith('::ffff:')||
+        /^f[cd]/.test(h)||/^fe[89ab]/.test(h)||/^ff/.test(h)) return false;
+  }
+  return true;
+}
 
 function sourceUrlOf(value) {
   if (typeof value !== 'string' || value.length > LIMITS.urlLength) throw new TypeError('sourceUrl must be a short HTTPS URL');
   let u;
   try { u = new URL(value); } catch { throw new TypeError('Invalid sourceUrl'); }
-  if (u.protocol !== 'https:' || !u.hostname || u.username || u.password) throw new TypeError('sourceUrl must use HTTPS without credentials');
+  if (u.protocol !== 'https:' || !publicHostname(u.hostname) || u.username || u.password) throw new TypeError('sourceUrl must use HTTPS without credentials');
   return u.href;
 }
 function validateItem(item) {
@@ -25,7 +50,7 @@ function safeLink(href, base) {
   if (typeof href !== 'string' || href.length > LIMITS.urlLength || !href.trim()) return null;
   try {
     const u = new URL(href, base);
-    return (u.protocol === 'https:' || u.protocol === 'http:') && !u.username && !u.password && u.href.length <= LIMITS.urlLength ? u.href : null;
+    return (u.protocol === 'https:' || u.protocol === 'http:') && publicHostname(u.hostname) && !u.username && !u.password && u.href.length <= LIMITS.urlLength ? u.href : null;
   } catch { return null; }
 }
 /** Bounded, provenance-preserving fields from a loaded Rusteerio CheerioAPI. */
