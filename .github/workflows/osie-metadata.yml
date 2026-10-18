@@ -81,6 +81,26 @@ jobs:
         run: |
           python3 tools/osie_sparse_stage.py --repository facebookresearch/sam2 --revision 2b90b9f5ceec907a1c18123530e92e794ad901a4 --file README.md --file LICENSE --destination "${RUNNER_TEMP}/sam2" --stage
 
+      - name: Existing games | Source-only pin of Unity motion matching (NOT installed)
+        run: |
+          python3 tools/osie_sparse_stage.py --repository JLPM22/MotionMatching --revision 35fc8ee9a0fd97f12de458ea81eaef7c8219d87a --file README.md --file LICENSE --destination "${RUNNER_TEMP}/motion-matching" --stage
+          python3 tools/osie_source_audit.py "${RUNNER_TEMP}/motion-matching"
+      - name: Existing Robotics/FORGE | Source-only pin of official three.js (NOT installed)
+        run: |
+          python3 tools/osie_sparse_stage.py --repository mrdoob/three.js --revision 0978e2b62e53654ebe1a2c3032ebee0a4981c701 --file README.md --file LICENSE --destination "${RUNNER_TEMP}/three-js" --stage
+          python3 tools/osie_source_audit.py "${RUNNER_TEMP}/three-js"
+      - name: Existing Engineering | Source-only pin of official REA (NOT installed)
+        run: |
+          python3 tools/osie_sparse_stage.py --repository morluto/rea --revision c12d9eda87aa5a022ee7e18ea96d8d03bfd12e96 --file README.md --file LICENSE --destination "${RUNNER_TEMP}/rea" --stage
+          python3 tools/osie_source_audit.py "${RUNNER_TEMP}/rea"
+      - name: Assert real upstream licence files were staged in ephemeral runner
+        run: |
+          for p in motion-matching three-js rea; do
+            test -s "${RUNNER_TEMP}/$p/LICENSE"
+            test -s "${RUNNER_TEMP}/$p/README.md"
+          done
+          echo "SOURCE_ONLY: 3 pinned official Git repositories staged and scanned; NO installation or runtime approval"
+
       - name: Static-risk scans of five region-diverse staged sources
         run: |
           for project in qwen-image kandinsky indictrans2 urduhack sam2; do
