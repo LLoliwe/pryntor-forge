@@ -28,7 +28,7 @@ jobs:
       - name: Test parser contracts and adversarial inputs offline
         run: |
           node --check tools/rusteerio_extract.mjs
-          node --test tests/rusteerio_extract.test.mjs tests/rusteerio_adversarial.test.mjs
+          node --test tests/rusteerio_extract.test.mjs tests/rusteerio_adversarial.test.mjs tests/rusteerio_local_file.test.mjs
       - name: Confirm provenance limitations explicitly
         run: grep -q 'This is NOT a DNS-resolution' tools/rusteerio_extract.mjs
   supply-chain-qa:
