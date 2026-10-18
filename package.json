@@ -13,7 +13,7 @@
   "scripts": {
     "start": "node src/server.mjs",
     "test": "node --test",
-    "check": "node --check src/core.mjs && node --check src/server.mjs && node --check bin/forge.mjs && node --check public/app.js && node --check src/worldweaver.mjs && node --check public/worldweaver.js"
+    "check": "node --check src/core.mjs && node --check src/server.mjs && node --check bin/forge.mjs && node --check public/app.js && node --check src/worldweaver.mjs && node --check src/locomotion.mjs && node --check public/worldweaver.js"
   },
   "license": "MIT",
   "files": [
