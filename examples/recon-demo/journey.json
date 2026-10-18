@@ -1,0 +1,12 @@
+[
+ {"action":"visible","selector":"#start"},
+ {"action":"tap","selector":"#start"},
+ {"action":"visible","selector":"#hit"},
+ {"action":"tap","selector":"#hit"},
+ {"action":"text","selector":"#score","includes":"10"},
+ {"action":"tap","selector":"#hit"},
+ {"action":"text","selector":"#score","includes":"20"},
+ {"action":"reload"},
+ {"action":"visible","selector":"#start"},
+ {"action":"text","selector":"#score","includes":"00"}
+]
