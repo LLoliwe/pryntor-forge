@@ -1,0 +1,102 @@
+import {fromPrompt, components, validateScene, addObject, removeObject, cadScriptFor, pascalHandoff, examplePrompt, templates, auditScene, rotateObject, moveObject, footprint} from './core.js';
+import {planRoute} from './research.js';
+const $=id=>document.getElementById(id);
+const canvas=$('viewport'),ctx=canvas.getContext('2d');
+let routeResult=null,routeSceneKey=null,routeRequest=null;
+let scene=fromPrompt(examplePrompt), selected=null, yaw=-0.73,zoom=1.0,drag=false,moved=false,lastX=0;
+const shortType=t=>t[0].toUpperCase()+t.slice(1);
+const numeric=n=>n.toFixed(1);
+function color(hex,a){return hex+a}
+function project(x,y,z){
+ const rotX=x*Math.cos(yaw)-y*Math.sin(yaw), rotY=x*Math.sin(yaw)+y*Math.cos(yaw);
+ const scale=Math.min(canvas.clientWidth/(scene.room.width*2.2),canvas.clientHeight/(scene.room.depth*2.2),61)*zoom;
+ return [canvas.clientWidth*.56+(rotX-rotY*.24)*scale,canvas.clientHeight*.60+(rotY*.62-z*1.12)*scale];
+}
+function polygon(points,fill,stroke,width=1){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke();}}
+function line(a,b,stroke,width=1){ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}
+function boxDraw(cx,cy,w,d,h,col,id){
+ const a=[project(cx-w/2,cy-d/2,0),project(cx+w/2,cy-d/2,0),project(cx+w/2,cy+d/2,0),project(cx-w/2,cy+d/2,0)];
+ const t=[project(cx-w/2,cy-d/2,h),project(cx+w/2,cy-d/2,h),project(cx+w/2,cy+d/2,h),project(cx-w/2,cy+d/2,h)];
+ polygon([a[0],a[1],t[1],t[0]],'#172724',col+'7a');
+ polygon([a[1],a[2],t[2],t[1]],'#213631',col+'9a');
+ polygon([a[3],a[2],t[2],t[3]],'#152723',col+'50');
+ polygon(t,col+'dc','#e1f9c0',id===selected?.id?2.5:0.7);
+ if(id===selected?.id){ctx.save();ctx.setLineDash([6,3]);polygon(t,null,'#e9ffa6',1.5);ctx.restore();}
+ const center=project(cx,cy,h+.22);ctx.fillStyle='#e8f7e6';ctx.font='10px ui-monospace,monospace';ctx.textAlign='center';ctx.fillText(id.replace(/-\d+$/, '').toUpperCase(),center[0],center[1]);
+}
+function draw(){
+ if(!canvas.clientWidth)return;
+ const rect=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
+ if(canvas.width!==Math.floor(rect.width*dpr)||canvas.height!==Math.floor(rect.height*dpr)){canvas.width=Math.floor(rect.width*dpr);canvas.height=Math.floor(rect.height*dpr);}
+ ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,rect.width,rect.height);
+ const {width:w,depth:d}=scene.room;
+ const floor=[project(-w/2,-d/2,0),project(w/2,-d/2,0),project(w/2,d/2,0),project(-w/2,d/2,0)];
+ polygon(floor,'#243a33','#94b880',1.8);
+ for(let x=-w/2;x<=w/2+.01;x+=.5)line(project(x,-d/2,0),project(x,d/2,0),'#5b836235',.7);
+ for(let y=-d/2;y<=d/2+.01;y+=.5)line(project(-w/2,y,0),project(w/2,y,0),'#5b836235',.7);
+ const back=[[project(-w/2,-d/2,0),project(w/2,-d/2,0),project(w/2,-d/2,scene.room.height),project(-w/2,-d/2,scene.room.height)],[project(-w/2,d/2,0),project(-w/2,-d/2,0),project(-w/2,-d/2,scene.room.height),project(-w/2,d/2,scene.room.height)]];
+ for(const p of back)polygon(p,'#60746813','#90c28f46',.6);
+ for(let x=-w/2;x<=w/2+.01;x+=1)line(project(x,-d/2,0),project(x,-d/2,scene.room.height),'#acc5ab19',.65);
+ const sorted=[...scene.objects].sort((a,b)=>{const za=a.x*Math.sin(yaw)+a.y*Math.cos(yaw);const zb=b.x*Math.sin(yaw)+b.y*Math.cos(yaw);return za-zb;});
+ for(const o of sorted){const c=components[o.type];boxDraw(o.x,o.y,footprint(o).width,footprint(o).depth,c.size[2],c.color,o.id);}
+ if(routeResult?.status==='clear' && routeSceneKey===JSON.stringify(scene)){
+  const pts=routeResult.waypoints.map(p=>project(p.x,p.y,0.06));
+  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#ffca71';ctx.lineWidth=5;
+  ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.stroke();
+  ctx.strokeStyle='#fff1c4';ctx.lineWidth=1.5;ctx.stroke();
+  for(const [i,p] of pts.entries())if(i===0||i===pts.length-1){ctx.beginPath();ctx.arc(p[0],p[1],6,0,Math.PI*2);ctx.fillStyle=i===0?'#76e6b1':'#ffca71';ctx.fill();}
+  ctx.restore();
+ }
+ for(const p of floor){ctx.fillStyle='#c5f37c';ctx.fillRect(p[0]-2,p[1]-2,4,4);}
+ line(project(-w/2,d/2,0),project(-w/2,d/2,-.4),'#c8ee79');
+ ctx.fillStyle='#9dbcaa';ctx.font='11px ui-monospace,monospace';ctx.textAlign='center';let pos=project(0,d/2,-.5);ctx.fillText(numeric(w)+' M',pos[0],pos[1]);
+}
+function update(){
+ if(routeResult && routeSceneKey!==JSON.stringify(scene)){routeResult=null;routeRequest=null;$('route-result').textContent='Scene changed. Run the planner again.';$('download-route').disabled=true;}
+ $('scene-title').textContent=scene.name.toUpperCase();
+ $('area').textContent=(scene.room.width*scene.room.depth).toFixed(1)+' m²';
+ $('count').textContent=String(scene.objects.length).padStart(2,'0');
+ const report=auditScene(scene);$('audit-status').textContent=report.status.toUpperCase();$('occupancy').textContent=`${report.occupiedAreaM2.toFixed(1)} / ${report.floorAreaM2.toFixed(1)} m²`;
+ $('dims').textContent=[scene.room.width,scene.room.depth,scene.room.height].map(n=>numeric(n)).join(' × ')+' M';
+ const s=scene.objects.find(o=>o.id===selected?.id);selected=s||null;
+ $('object-list').innerHTML='<option value="">None selected</option>'+scene.objects.map(o=>`<option value="${o.id}">${shortType(o.type)} (${o.id})</option>`).join('');$('object-list').value=s?.id||'';
+ $('selected-title').textContent=s?shortType(s.type):'None selected';
+ $('selected-description').textContent=s?`Editable ${components[s.type].kind} envelope. Export source for further CAD work.`:'Select a component in the canvas to inspect its physical envelope.';
+ $('remove').disabled=!s;for(const control of ['rotate','move-left','move-right','move-up','move-down'])$(control).disabled=!s;
+ $('properties').innerHTML=s?`<div class="proprow"><span>TYPE</span><strong>${s.type.toUpperCase()}</strong></div><div class="proprow"><span>DIMENSIONS</span><strong>${components[s.type].size.map(n=>n.toFixed(2)).join(' × ')} M</strong></div><div class="proprow"><span>POSITION</span><strong>${s.x.toFixed(2)}, ${s.y.toFixed(2)} M</strong></div><div class="proprow"><span>ROTATION</span><strong>${s.rotation}°</strong></div><div class="proprow"><span>QUALITY</span><strong>ENVELOPE ONLY</strong></div>`:'<div class="proprow"><span>STATUS</span><strong>WAITING</strong></div>';
+ draw();
+}
+function notice(message){$('notice').textContent=message;}
+function download(filename,content,mime='application/json'){let blob=new Blob([content],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+$('object-list').addEventListener('change',()=>{selected=scene.objects.find(o=>o.id===$('object-list').value)||null;update();});
+$('blueprints').innerHTML='<option value="">Choose a blueprint</option>'+Object.entries(templates).map(([key,t])=>`<option value="${key}">${t.name}</option>`).join('');
+$('blueprints').addEventListener('change',()=>{const t=templates[$('blueprints').value];if(!t)return;try{scene=fromPrompt(t.prompt);scene.name=t.name;$('prompt').value=t.prompt;$('blueprint-use').textContent=t.use;selected=null;update();notice(`Loaded ${t.name}: ${scene.objects.length} checked envelopes.`);}catch(err){notice(err.message);}});
+$('catalog').innerHTML=Object.entries(components).map(([t,c])=>`<button data-type="${t}"><span class="swatch" style="background:${c.color}"></span>${shortType(t)} <span style="margin-left:auto;color:#869a8d">+</span></button>`).join('');
+$('catalog').addEventListener('click',e=>{const b=e.target.closest('button[data-type]');if(!b)return;try{scene=addObject(scene,b.dataset.type);selected=scene.objects.at(-1);update();notice('Component added to the source scene.');}catch(err){notice(err.message);}});
+$('generate').addEventListener('click',()=>{try{scene=fromPrompt($('prompt').value);selected=null;update();notice(`Generated ${scene.objects.length} objects. Click to inspect.`);}catch(e){notice(e.message);}});
+$('reset').addEventListener('click',()=>{yaw=-.73;zoom=1;draw();notice('View reset.');});
+$('remove').addEventListener('click',()=>{if(!selected)return;scene=removeObject(scene,selected.id);selected=null;update();notice('Selected component removed.');});
+$('rotate').addEventListener('click',()=>{if(!selected)return;try{scene=rotateObject(scene,selected.id);update();notice('Rotation validated.')}catch(err){notice(err.message);}});
+for(const [control,dx,dy] of [['move-left',-.25,0],['move-right',.25,0],['move-up',0,-.25],['move-down',0,.25]])$(control).addEventListener('click',()=>{if(!selected)return;try{scene=moveObject(scene,selected.id,selected.x+dx,selected.y+dy);update();notice('Move validated.')}catch(err){notice(err.message);}});
+$('import-json').addEventListener('change',async(e)=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>100000)throw new Error('JSON exceeds 100 KB limit');const candidate=validateScene(JSON.parse(await file.text()));scene=candidate;selected=null;$('blueprints').value='';update();notice(`Imported and validated ${scene.objects.length} envelopes.`);}catch(err){notice(`Import rejected: ${err.message}`);}finally{e.target.value='';}});
+$('export-audit').addEventListener('click',()=>{download('pryntor-forge-spatial-audit.json',JSON.stringify(auditScene(scene),null,2));notice('Preflight exported. Only 2D axis-aligned envelope overlap checked.');});
+$('run-route').addEventListener('click',()=>{
+ try{
+  const number=id=>{const input=$(id);if(!input.value.trim())throw new Error(`${id} needs a number`);const v=Number(input.value);if(!Number.isFinite(v))throw new Error(`${id} must be finite`);return v;};
+  routeRequest={scene:validateScene(scene),start:{x:number('route-start-x'),y:number('route-start-y')},goal:{x:number('route-goal-x'),y:number('route-goal-y')},options:{agentType:$('route-agent').value,clearanceM:number('route-clearance')}};
+  routeResult=planRoute(routeRequest.scene,routeRequest.start,routeRequest.goal,routeRequest.options);
+  routeSceneKey=JSON.stringify(scene);
+  $('route-result').textContent=routeResult.status==='clear'?`CLEAR ON 2D MODEL · ${routeResult.lengthM.toFixed(3)} m · ${routeResult.visitedNodes ?? 0} graph nodes visited. Not robot-safe.`:`${routeResult.status.toUpperCase()} · ${routeResult.reason}`;
+  $('download-route').disabled=false;draw();
+ }catch(e){routeResult=null;routeRequest=null;$('download-route').disabled=true;$('route-result').textContent=`Rejected: ${e.message}`;draw();}
+});
+$('download-route').addEventListener('click',()=>{if(!routeResult||!routeRequest)return;download('forge-research-route-evidence.json',JSON.stringify({request:routeRequest,result:routeResult},null,2));notice('Model-specific route evidence exported. No physical safety certification.');});
+$('export-json').addEventListener('click',()=>{download('pryntor-forge-scene.json',JSON.stringify(validateScene(scene),null,2));notice('Scene JSON exported.');});
+$('export-cad').addEventListener('click',()=>{if(!selected){notice('Select a component in the scene to export its CAD envelope.');return;}download(selected.type+'-envelope.py',cadScriptFor(selected.type),'text/x-python');notice('cadgen 0.7.21 source exported. Generation requires upstream runtime.');});
+$('export-pascal').addEventListener('click',()=>{download('pascal-handoff.json',JSON.stringify(pascalHandoff(scene),null,2));notice('Handoff exported. Use an agent connected to Pascal MCP.');});
+canvas.addEventListener('pointerdown',e=>{drag=true;moved=false;lastX=e.clientX;canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;let diff=e.clientX-lastX;if(Math.abs(diff)>2)moved=true;yaw+=diff*.008;lastX=e.clientX;draw();});
+canvas.addEventListener('pointerup',e=>{if(!moved){const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let nearest=null,dist=65;for(const o of scene.objects){const c=components[o.type],p=project(o.x,o.y,c.size[2]);const dd=Math.hypot(p[0]-x,p[1]-y);if(dd<dist){dist=dd;nearest=o;}}selected=nearest;update();}drag=false;});
+canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.6,Math.min(2.3,zoom*(e.deltaY>0?.94:1.06)));draw();},{passive:false});
+window.addEventListener('resize',draw);
+update();
