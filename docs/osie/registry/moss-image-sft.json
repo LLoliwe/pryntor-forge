@@ -7,7 +7,7 @@
   "data_rights_reviewed": false,
   "security_reviewed": false,
   "cost_reviewed": false,
-  "estimated_cash_cost_zar": 0,
+  "estimated_cash_cost_zar": null,
   "spend_approval_evidence": null,
   "benchmark_evidence": [],
   "rollback_tested": false,
@@ -35,5 +35,10 @@
       "pattern": "trust_remote_code=True",
       "interpretation": "static review signal, not exploit proof"
     }
-  ]
+  ],
+  "model_snapshot_bytes_estimate": 27200000000,
+  "snapshot_estimate_source": "https://huggingface.co/OpenMOSS-Team/MOSS-Image-Base/tree/main",
+  "compute_access": "UNVERIFIED_NO_GPU_JOB",
+  "weights_installed": false,
+  "inference_run": false
 }
