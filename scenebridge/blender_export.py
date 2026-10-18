@@ -75,6 +75,12 @@ def run(argv=None):
         shader = output.inputs['Surface'].links[0].from_node
         if shader.type != 'BSDF_PRINCIPLED':
             raise ValueError(name + ': unsupported shader output, bake first')
+        alpha = shader.inputs.get('Alpha')
+        if alpha and (alpha.is_linked or float(alpha.default_value) != 1.0):
+            raise ValueError(name + ': alpha/translucency requires a separate approved bake')
+        strength = shader.inputs.get('Emission Strength')
+        if strength and (strength.is_linked or float(strength.default_value) != 0.0):
+            raise ValueError(name + ': emission is not yet supported')
         entry = {
             'name': name,
             'base_color': [float(n) for n in shader.inputs['Base Color'].default_value],

@@ -150,7 +150,7 @@ class SceneBridgeTests(unittest.TestCase):
 
     def test_compiles_blender_and_unreal_adapters(self):
         folder = Path(__file__).resolve().parents[1] / 'scenebridge'
-        for filename in ('blender_export.py', 'unreal_import.py'):
+        for filename in ('blender_export.py', 'ci_blender_smoke.py', 'unreal_import.py'):
             py_compile.compile(str(folder / filename), doraise=True)
 
 
