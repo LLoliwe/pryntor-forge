@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "0.2",
+  "name": "Creative production set",
+  "room": {
+    "width": 10,
+    "depth": 7,
+    "height": 3.1
+  },
+  "objects": [
+    {
+      "id": "table-1",
+      "type": "table",
+      "x": -0.325,
+      "y": 0.1,
+      "rotation": 0
+    },
+    {
+      "id": "table-2",
+      "type": "table",
+      "x": 1.275,
+      "y": 0.1,
+      "rotation": 0
+    },
+    {
+      "id": "table-3",
+      "type": "table",
+      "x": -0.325,
+      "y": -1.5,
+      "rotation": 0
+    },
+    {
+      "id": "cabinet-1",
+      "type": "cabinet",
+      "x": 1.025,
+      "y": -0.825,
+      "rotation": 0
+    },
+    {
+      "id": "cabinet-2",
+      "type": "cabinet",
+      "x": 0.225,
+      "y": 1.575,
+      "rotation": 0
+    },
+    {
+      "id": "chair-1",
+      "type": "chair",
+      "x": -1.525,
+      "y": -0.025,
+      "rotation": 0
+    },
+    {
+      "id": "chair-2",
+      "type": "chair",
+      "x": -1.525,
+      "y": 0.775,
+      "rotation": 0
+    },
+    {
+      "id": "chair-3",
+      "type": "chair",
+      "x": -1.525,
+      "y": -0.825,
+      "rotation": 0
+    },
+    {
+      "id": "chair-4",
+      "type": "chair",
+      "x": -0.725,
+      "y": 1.575,
+      "rotation": 0
+    }
+  ]
+}
