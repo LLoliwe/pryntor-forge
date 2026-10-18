@@ -52,6 +52,8 @@ jobs:
             --file pyproject.toml \
             --destination "${RUNNER_TEMP}/osie-moss" \
             --stage
+      - name: Static-risk scan of actual staged MOSS source (signals are not clearance)
+        run: python3 tools/osie_source_audit.py "${RUNNER_TEMP}/osie-moss"
       - name: Demonstrate staged model is not activated
         run: |
           test -f "${RUNNER_TEMP}/osie-moss/README.md"
@@ -78,6 +80,13 @@ jobs:
       - name: US visual segmentation | Pin SAM2 source and licence for independent review
         run: |
           python3 tools/osie_sparse_stage.py --repository facebookresearch/sam2 --revision 2b90b9f5ceec907a1c18123530e92e794ad901a4 --file README.md --file LICENSE --destination "${RUNNER_TEMP}/sam2" --stage
+
+      - name: Static-risk scans of five region-diverse staged sources
+        run: |
+          for project in qwen-image kandinsky indictrans2 urduhack sam2; do
+            echo "SOURCE: $project"
+            python3 tools/osie_source_audit.py "${RUNNER_TEMP}/$project"
+          done
 
   global-metadata-probe:
     needs: verify-intake
