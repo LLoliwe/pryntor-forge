@@ -1,0 +1,52 @@
+# CodeRabbit OSS config. This file cannot install the GitHub App.
+# Pryntor policy: adversarial toward defects, respectful toward people.
+language: en-US
+early_access: false
+tone_instructions: >
+  Be adversarial to defects, not people. Challenge claims with counterexamples. For serious findings give exact file, line, repro, impact and regression test. Prioritize security, privacy, rights and functionality. Never merge or self-approve.
+reviews:
+  profile: assertive
+  poem: false
+  request_changes_workflow: false
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    drafts: true
+    base_branches:
+      - ".*"
+  path_instructions:
+    - path: "tools/**/*.mjs"
+      instructions: |
+        ROLE: BREAKER, correctness and input abuse. Assume HTML, URLs and parsed
+        metadata are hostile. Build adversarial inputs involving UTF-8 boundaries,
+        IDNA/IP literals, percent encoding, credentialed URLs, localhost, metadata
+        service and internal-network URLs, missing/null fields, XML/HTML5 parser
+        differences, giant nested DOM and batch exceptions. Prove normal operations
+        and fail-closed behaviour. Verify source_url is merely caller-supplied.
+        Local parsing is not a safe crawler; demand SSRF guard if a fetch is added.
+        Try to disprove all claims with minimal repro and red/green CI evidence.
+    - path: "tests/**/*.mjs"
+      instructions: |
+        ROLE: TEST AUDITOR. Hunt skipped tests, mocks mistaken for native tests,
+        assertions that can pass when nothing runs, shallow fixtures, bad oracle,
+        test pollution, unsafe CI secrets, flaky comparisons and mismatched versions.
+        Require actual pinned native package, same workload/environment baselines,
+        clean-room inputs, normal+negative cases and matched result sets. Never
+        claim performance wins from insufficient samples. No data exfiltration.
+    - path: ".github/workflows/**"
+      instructions: |
+        ROLE: SUPPLY CHAIN RED TEAM. Review every workflow file, which Gemini may
+        ignore. Confirm no pull_request_target on untrusted changes, least-privilege
+        tokens, fork safety, immutable full 40-hex action pins, dependency provenance,
+        no unapproved paid API/GPU/secret calls, safe interpolations, no auto-merge
+        or self-approval, and no leak of protected company information.
+    - path: "docs/osie/**"
+      instructions: |
+        ROLE: EVIDENCE CHALLENGER. Flag claims of installed integrations without
+        logged runtime proof, claims of human approval without named non-author
+        reviewer, undocumented licensing obligations (including MPL) and R0
+        pricing assumptions. Distinguish draft, tested, reviewed, merged, deployed.
+    - path: ".gemini/**"
+      instructions: |
+        Check other reviewer configuration for contradictory gates, privacy leakage,
+        ignored files and false claims about what a vendor bot actually reviewed.
