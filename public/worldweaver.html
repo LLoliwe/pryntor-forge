@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10101f"><title>WORLDWEAVER | Pryntor FORGE</title><link rel="stylesheet" href="/worldweaver.css"></head>
+<body><div class="shell">
+<header class="top"><div class="brand"><span class="logo">W</span><span>PRYNTOR <b>/ WORLDWEAVER</b><small>FORGE · PLAYABLE WORLD EXPERIMENT 001</small></span></div><span class="tag">LOCAL FIRST · PRIVATE ALPHA</span></header>
+<div class="layout">
+<aside class="panel">
+<div><small class="eyebrow">01 / BRING A WORLD TO LIFE</small><h1>Make worlds.<br><em>Make them playable.</em></h1><p>A real game loop with editable objects, not an animated wallpaper.</p></div>
+<section><small class="eyebrow">CONTROLS</small><button id="play" class="primary">▶ Play world</button><button id="restart">↻ Restart level</button><button id="edit">✦ Edit world</button><p class="help">A / D or ← / → to move. Space / ↑ to jump. Touch controls appear on phones.</p></section>
+<section><small class="eyebrow">02 / ADMIT A REFERENCE</small><label class="file" for="image">↥ Import your art</label><input id="image" type="file" accept="image/png,image/jpeg,image/webp"><label class="help"><input type="checkbox" id="rights"> I have rights to this artwork</label><p class="help" id="imageNote">Images stay on-device. This prototype renders them as a backdrop only.</p></section>
+<section><small class="eyebrow">03 / EDIT GAMEPLAY</small><div class="tools"><button class="selected" data-tool="platform">▰ Platform</button><button data-tool="gem">◆ Spark</button><button data-tool="enemy">✳ Enemy</button><button data-tool="erase">⌫ Erase</button></div><p class="help">Select Edit, then tap the world to add or remove an object.</p></section>
+<button id="export" class="export">↓ Export scene JSON</button>
+</aside>
+<main class="stage"><div class="stage-top"><span><small class="eyebrow">LIVE WORLD ENGINE</small><strong>THE SPARK TRAIL</strong></span><span id="mode">PLAY MODE</span></div>
+<canvas width="960" height="540" id="world" tabindex="0" role="img" aria-label="Playable platformer. Move with arrow keys and jump with Space, or use on-screen touch controls."></canvas>
+<div class="touch"><div><button data-key="left" aria-label="Move left">◀</button><button data-key="right" aria-label="Move right">▶</button></div><button data-key="jump" aria-label="Jump">↑ JUMP</button></div>
+<div class="bar"><div><small>SPARK SCORE</small><b id="score">0000</b></div><div><small>COLLECTED</small><b id="count">0 / 5</b></div><div><small>RESTARTS</small><b id="deaths">00</b></div><span role="status" aria-live="polite" id="notice">Reach the portal.</span></div>
+</main></div><footer>PROTOTYPE, NOT AN AUTOMATIC IMAGE SEGMENTER OR PUBLIC CHILD-FACING RELEASE. <b>PRYNTOR FORGE</b> · R0 spend.</footer></div>
+<script type="module" src="/worldweaver.js"></script></body></html>
