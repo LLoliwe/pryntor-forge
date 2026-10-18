@@ -167,10 +167,13 @@ def discover(queries, sources, limit, fetch=fetch_json, env=None):
     dedup = {item["url"]: item for item in found}
     attempted = len(health)
     available = sum(h["state"] in ("OK", "OK_EMPTY") for h in health)
+    productive_sources = sorted({h["source"] for h in health if h["state"] == "OK"})
     return {"generated_at": datetime.now(timezone.utc).isoformat(),
             "status": "DISCOVERY_ONLY_NOT_INSTALLED",
             "coverage": {"attempted": attempted, "reachable": available,
                          "unavailable": attempted - available,
+                         "healthy_sources": productive_sources,
+                         "healthy_source_count": len(productive_sources),
                          "complete": available == attempted},
             "candidates": sorted(dedup.values(), key=lambda x: (x["source"], x["id"])),
             "provider_health": health,
@@ -184,19 +187,30 @@ def main(argv=None):
     p.add_argument("--query", action="append", default=[], help="upstream keyword; repeat for more")
     p.add_argument("--sources", default=",".join(SOURCES), help="comma-separated approved adapters")
     p.add_argument("--limit", type=int, default=5, help="maximum results per source and query (1 to 10)")
+    p.add_argument("--min-healthy-sources", type=int, default=0,
+                   help="fail with exit 3 when fewer provider families return actual candidates")
     args = p.parse_args(argv)
     sources = [v.strip() for v in args.sources.split(",")]
     if not sources or any(s not in SOURCES for s in sources):
         p.error("use recognised sources: " + ",".join(SOURCES))
     if not (1 <= args.limit <= 10) or len(args.query) > 6 or any(len(q) > 90 or not q.strip() for q in args.query):
         p.error("use 1-10 results, <=6 nonempty queries, <=90 characters each")
+    if not (0 <= args.min_healthy_sources <= len(set(sources))):
+        p.error("minimum healthy sources must be between 0 and selected source count")
+    if not args.live and args.min_healthy_sources:
+        p.error("health requirement needs --live; offline mode cannot prove provider availability")
     if not args.live:
         print(json.dumps({"status": "OFFLINE_NO_NETWORK", "sources": sources,
                           "manual_platforms": MANUAL_ONLY,
                           "instruction": "pass --live --query keyword for public metadata only"}, indent=2))
         return 0
     queries = args.query or ["image generation"]
-    print(json.dumps(discover(queries, sources, args.limit), indent=2, ensure_ascii=False))
+    report = discover(queries, sources, args.limit)
+    print(json.dumps(report, indent=2, ensure_ascii=False))
+    if report["coverage"]["healthy_source_count"] < args.min_healthy_sources:
+        # JSON evidence is printed before failure, for CI artifact collection.
+        print("OSIE_PROVIDER_COVERAGE_FAILED", file=sys.stderr)
+        return 3
     return 0
 
 
