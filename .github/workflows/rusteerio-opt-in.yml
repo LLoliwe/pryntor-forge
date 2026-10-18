@@ -6,6 +6,7 @@ on:
       - 'tools/rusteerio_benchmark.mjs'
       - 'tests/rusteerio_extract.test.mjs'
       - 'tests/rusteerio_parity.test.mjs'
+      - 'tests/rusteerio_adversarial.test.mjs'
       - 'tests/fixtures/rusteerio_pages.mjs'
       - '.github/workflows/rusteerio-opt-in.yml'
   workflow_dispatch:
@@ -24,10 +25,10 @@ jobs:
         run: |
           node --check tools/rusteerio_extract.mjs
           node --check tools/rusteerio_benchmark.mjs
-          node --test tests/rusteerio_extract.test.mjs tests/rusteerio_parity.test.mjs
+          node --test tests/rusteerio_extract.test.mjs tests/rusteerio_parity.test.mjs tests/rusteerio_adversarial.test.mjs
       - name: Pinned isolated package install, not production deployment
         run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund rusteerio@2.0.0 cheerio@1.2.0
       - name: Actual Rusteerio native, Cheerio parity and batch smoke
-        run: node --test tests/rusteerio_extract.test.mjs tests/rusteerio_parity.test.mjs
+        run: node --test tests/rusteerio_extract.test.mjs tests/rusteerio_parity.test.mjs tests/rusteerio_adversarial.test.mjs
       - name: Synthetic local comparative measurement (informational, never a release threshold)
         run: node tools/rusteerio_benchmark.mjs
