@@ -1,0 +1,60 @@
+PRYNTOR KIMI INDEPENDENT ADVERSARIAL AUDIT
+Reviewer: delegated independent audit agent, not implementation author.
+Scope: local FORGE PR17 checkout only. No external provider/API calls. No implementation edits.
+Baseline revision: e7e38aefb3fc6dd464a25ec0a2c9d8da6cd7dc95.
+Commands: node --test test/kimi-pilot-gate.test.mjs (30/30 pass).
+Reproduce extra probes: node /workspace/scratch/6f5b860fc863/kimi-independent-probes.mjs
+
+BASELINE FINDINGS
+F1 HIGH evidence integrity: citations:Array(1) satisfies length and every(isHttpUrl), so an approval has no actual citation but readyForIndependentReview=true. Sparse tools similarly bypass element traversal. Sparse values cannot originate in ordinary JSON but can originate from this exported JavaScript API.
+F2 HIGH evidence integrity: arbitrary nonempty evidenceId is accepted. 'fabricated-without-artifact' marks ready. Documentation acknowledges truth of underlying citations is not assessed. This is an incomplete evidence gate, not proof of immutable evidence or independent retrievability. Require trusted manifest/expected hash/source revision and clear distinction between validated fixture and independently approved provider evidence.
+F3 MEDIUM authorization: Object.create(allTrueFlags) has zero own declarations but evaluateAccessGate returns ready=true. Require own properties and reject accessor-based evidence or snapshot values into a strict canonical record.
+F4 MEDIUM evidence hygiene: https://user:password@127.0.0.1/private accepted as an approval source. No fetch exists, so this is not a demonstrated SSRF. It is credential/host validation and misleading provenance.
+F5 MEDIUM reproducibility: empty caseId is silently converted to invalid-0 and accepted. Invalid/missing IDs must fail, not become accepted source identifiers.
+
+Correctly blocked: single positive charge among 100, unauthorized write tool name, NaN charge, string 'true' permission, non-synthetic fixture. These are useful offline field validations. They are not verified vendor billing settings, permission enforcement at execution, or live API safety.
+
+20 DISTINCT EVALUATIONS, BASELINE DISPOSITIONS
+1 Strategic fit: CONDITIONAL. Existing FORGE fixture gate fits controlled pilot. No evidence Kimi improves flagship product.
+2 Technical differentiation: UNTESTED. No actual Kimi versus baseline outputs.
+3 Real product usefulness: BLOCKED. Current module scores synthetic metadata; no shipped game/CAD/customer outcome verified.
+4 Model reliability: UNTESTED. No live model outputs, latency distribution or repeated trials.
+5 Agent safety: PARTIAL. Exact tool-name deny checks pass. No tool executor exists, therefore argument security and execution authorization untested.
+6 Financial exposure: PARTIAL. Charge-field tests pass and no network client exists. Actual nonbillable provider grant/hard cap unknown.
+7 Data privacy: PARTIAL. Synthetic flag enforced for fixtures, but content leakage detection and provider data processing clearance not verified.
+8 Intellectual property: BLOCKED. No external character/source disclosure done in audit; per-artifact permissions not demonstrated.
+9 Commercial licensing: BLOCKED. Boolean terms flag does not establish reviewed model/version licence or commercial entitlement.
+10 Geographic/legal eligibility: BLOCKED. Boolean South Africa flag is not actual account or vendor eligibility evidence.
+11 Cross-border processing: BLOCKED. No verified data processing agreement/residency/retention controls reviewed here.
+12 Children safety: BLOCKED. No child-facing release or child data. Actual content/accessibility review absent.
+13 Integration quality: FAILED BASELINE. F1/F3/F5 are reproducible robustness gaps. Existing 30 tests alone miss them.
+14 Security/credentials: PARTIAL. No hardcoded secret/network client in inspected module; inherited flags and credential-bearing evidence URL accepted.
+15 Enterprise credibility: CONDITIONAL. Honest offline status supports credibility. No vendor acknowledgement/customer deployment established.
+16 Competitive alternatives: UNTESTED. Same-task baselines not executed.
+17 Partnership leverage: UNKNOWN. No vendor application receipt or entitlement reviewed in this audit scope.
+18 Reproducibility: FAILED BASELINE. Probes reproducible locally, but submitted evidence lacks immutable validated artifact and model/version binding.
+19 Independent QA: PARTIAL. This reviewer independently reproduced gaps; no independent production approval granted.
+20 Founder decision readiness: NOT READY FOR ACTIVATION. Safe offline hardening can continue. Live activation needs verified grant, privacy/IP clearance, credentials, trustworthy evidence and separate reviewer/owner signoff.
+
+No perfect score and no production/merge approval. Findings may be remediated by implementation author, followed by an independent rerun at the revised content hash. This review is not legal advice or a provider entitlement audit.
+
+REMEDIATION AND INDEPENDENT RERUN
+Implementation author repaired the gate. Reviewer authored test/kimi-independent.test.mjs independently and did not alter implementation.
+Gate content hash: 955d7fd8f35f32b1d28faa7de2c04285733e64ff5e2a4e55618874d881aeb853
+Independent test content hash: 71faff7f581a51d1e4ec97aab37d7866a6cc9e2a10740ff11712ebf79da90028
+Command: node --test test/kimi-pilot-gate.test.mjs test/kimi-independent.test.mjs
+Outcome: 45/45 passing, comprising existing 30 plus 15 independent adversarial tests.
+
+F1 FIXED for ordinary sparse arrays: Array.from forces holes to be validated.
+F2 PARTIALLY REMEDIATED: evidenceId now requires SHA256 reference and trusted runner registry with matching bytes. Empty registry, arbitrary text, altered registered bytes and unknown hash block review. Hashes prove byte identity only. No assertion that bytes demonstrate real provider use, truthful charges, licensing or independent approval. Those remain external governance blockers.
+F3 FIXED for inherited flags: own declarations required. Getters/proxies remain outside ordinary JSON configuration threat boundary; do not accept executable untrusted objects.
+F4 FIXED for tested credential-bearing and exact loopback URLs. Not a universal public URL classifier; other private-network addresses and DNS rebinding remain outside module scope. Do not fetch arbitrary sources without a separate network boundary.
+F5 FIXED: absent/empty case ID now critical failure.
+F6 FOUND DURING FOLLOWUP AND FIXED: sparse cases array previously omitted missing benchmark record. Independent test now confirms one hole among 100 is a critical failure.
+
+Critical invariant VERIFIED OFFLINE: a single positive charge, unauthorized tool name, or forged evidence reference among 100 otherwise valid fixtures prevents readiness, despite 99% accuracy.
+
+Updated evaluation 13: LIMITED OFFLINE PASS for reproduced field-validation regressions; integration/runtime security still untested.
+Updated evaluation 18: PARTIAL, reproducible fixtures and byte integrity verified; model/version provenance, truthful live measurements and artifact/result binding not independently established.
+Updated evaluation 19: LIMITED OFFLINE PASS, independent adversarial rerun completed; no production or merge approval.
+All other 20-category dispositions remain as above. Activation NOT APPROVED. No real Kimi/baseline performance comparison was run by this reviewer. No API spend or private asset disclosure occurred.

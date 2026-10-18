@@ -52,3 +52,37 @@ node --test test/kimi-pilot-gate.test.mjs
 The code is opt-in, pure Node and has no network, telemetry, secrets, npm dependency or Kimi call. Do not add an API client to this path until provider sponsorship and the access gate are verified.
 
 Safety red-team fix: a single actual charge, unauthorized tool call, malformed case, missing evidence or other integrity violation blocks the review-ready flag even when accuracy exceeds 95%. Only exact locally allowlisted read operations and HTTPS citations are accepted by the offline contract checker; citation truth still needs independent verification.
+
+## OMEGA R3 verified offline hardening, 18 October 2026
+
+The R2 model map above is superseded by current official Kimi Code documentation:
+`k3`, `k3-256k`, `kimi-for-coding` (K2.8 Preview), and
+`kimi-for-coding-highspeed` (K2.7 Code HighSpeed). Code membership endpoints and
+Open Platform token billing are different entitlements. No account quota is verified.
+Source: https://www.kimi.com/en/help/kimi-code/models
+
+Independent audit reproduced sparse arrays, inherited access flags, missing IDs,
+credential-bearing citations and arbitrary evidence labels bypassing the old gate.
+Repairs require own access declarations, dense validation and SHA256 references
+whose bytes exist in a trusted caller registry. Byte identity does not establish
+provider authenticity, truthful billing or factual source support. Never pass
+model-generated registry entries as independent evidence.
+
+`src/kimi-offline-runner.mjs` is a vendor-neutral recorded-response import adapter,
+not a network API client. It checks exact model version, source SHA, frozen fixture
+hash, case ordering, output hash and p50/p95 latency. No tool execution, automatic
+fallback, retry, hosted job or API spending is available. Rollback: stop importing
+the opt-in modules or revert this PR. Nothing is wired into the web application.
+
+40 synthetic decision cases in `test/fixtures/kimi/portfolio-v1.json` cover ZOWIBO,
+FORGE, Recover, Robotics and Studios/LVL7. They test approval discipline only,
+not animation taste, geometry execution, game responsiveness or model skill.
+Oracle fixture replay is NOT a baseline model result. Recordings must later come
+from approved provider calls under independently verified entitlement; independent
+human scoring of correctness, creativity, maintainability, real-device behavior
+and regressions remains required.
+
+Reproduce: `npm test` and `npm run check`. Original 30 gate tests plus 15 separately
+authored independent regression tests and 6 replay tests pass, along with 8 existing
+FORGE tests: 59 total. See `KIMI_INDEPENDENT_AUDIT_20261018.txt` for the 20-category
+dispositions and explicit activation refusal. No Kimi response has been benchmarked.

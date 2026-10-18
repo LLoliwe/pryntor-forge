@@ -1,6 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateAccessGate, evaluateStructuredCases } from '../src/kimi-pilot-gate.mjs';
+import { evaluateAccessGate, evaluateStructuredCases as scoreCases, evidenceRef } from '../src/kimi-pilot-gate.mjs';
+
+const bytes = 'synthetic-fixture-001';
+const ref = evidenceRef(bytes);
+const registry = new Map([[ref, bytes]]);
+const evaluateStructuredCases = (cases) => scoreCases(cases, registry);
 
 const green = {
   founderApprovedPilot: true, writtenNoChargeGrant: true,
@@ -16,7 +21,7 @@ const candidate = (changes = {}) => ({
   result: {
     decision: 'approve', citations: ['https://example.org/official'],
     toolCalls: ['read:public-spec'], actualChargeUsd: 0,
-    latencyMs: 1200, evidenceId: 'synthetic-fixture-001', ...changes
+    latencyMs: 1200, evidenceId: ref, ...changes
   }
 });
 
