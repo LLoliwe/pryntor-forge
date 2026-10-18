@@ -22,6 +22,8 @@ jobs:
           python-version: '3.11'
       - run: python -m unittest discover -s tests -p 'test_scenebridge.py' -v
       - run: python -m compileall -q scenebridge
+      - name: Validate cloud UE5 runner shell syntax
+        run: bash -n scenebridge/cloud_ue5_runner.sh
   blender-smoke:
     runs-on: ubuntu-latest
     steps:
