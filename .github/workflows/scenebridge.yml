@@ -29,14 +29,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install distro Blender and its pinned FBX Python dependency
+      - name: Install distro Blender and ABI-matched system NumPy
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y blender
-          python -m pip install --disable-pip-version-check --no-input numpy==1.26.4
+          sudo apt-get install -y blender python3-numpy
       - name: Export original procedural office with Blender
         run: |
-          PYTHONPATH="$(python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')" blender --background --factory-startup --python-exit-code 19 --python scenebridge/ci_blender_smoke.py -- --out "$RUNNER_TEMP/scenebridge-office"
+          blender --background --factory-startup --python-exit-code 19 --python-expr "import sys,numpy; print('Blender Python:', sys.version, 'NumPy:',numpy.__version__)"
+          blender --background --factory-startup --python-exit-code 19 --python scenebridge/ci_blender_smoke.py -- --out "$RUNNER_TEMP/scenebridge-office"
       - name: Verify exported real FBX and manifest through offline planner
         run: |
           python -m scenebridge validate "$RUNNER_TEMP/scenebridge-office/manifest.json"
