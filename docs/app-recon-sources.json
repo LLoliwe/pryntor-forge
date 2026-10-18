@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "reviewedDate": "2026-10-18",
+  "tools": [
+    {
+      "id": "website-cloner-template",
+      "url": "https://github.com/JCodesMore/ai-website-cloner-template",
+      "license": "MIT",
+      "use": "Web layout inspection and agent workflow inspiration",
+      "restriction": "Reference only; inspect dependencies, website terms and visual rights first",
+      "installed": false,
+      "autoEnabled": false
+    },
+    {
+      "id": "open-lovable",
+      "url": "https://github.com/firecrawl/open-lovable",
+      "license": "MIT",
+      "use": "React web reconstruction research",
+      "restriction": "Requires Firecrawl, model and hosted sandbox credentials with possible charges; block unattended use",
+      "installed": false,
+      "autoEnabled": false
+    },
+    {
+      "id": "replica-skill",
+      "url": "https://github.com/Jakeschincariol/replica-skill",
+      "license": "MIT",
+      "use": "Reverse-engineering and QA workflow inspiration",
+      "restriction": "Review every agent skill instruction and integration before use",
+      "installed": false,
+      "autoEnabled": false
+    },
+    {
+      "id": "ai-app-cloner",
+      "url": "https://github.com/Birkenpapier/ai-app-cloner",
+      "license": "MIT",
+      "use": "Expo/React Native screenshot-to-app experiment",
+      "restriction": "Experimental; screenshots do not prove app functionality or asset rights",
+      "installed": false,
+      "autoEnabled": false
+    },
+    {
+      "id": "android-agent",
+      "url": "https://github.com/ghost-in-the-droid/android-agent",
+      "license": "MIT",
+      "use": "Optional mobile-device QA research",
+      "restriction": "Security restriction: default API unauthenticated, binds 0.0.0.0:5055; do not expose or connect production phones or accounts",
+      "installed": false,
+      "autoEnabled": false
+    },
+    {
+      "id": "clone-wars",
+      "url": "https://github.com/GorvGoyl/Clone-Wars",
+      "license": "AGPL-3.0",
+      "use": "External app-reference index",
+      "restriction": "The index license is not the license of individual linked projects; do not copy code blindly",
+      "installed": false,
+      "autoEnabled": false
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "action": "visible",
+    "selector": "#start"
+  },
+  {
+    "action": "tap",
+    "selector": "#start"
+  },
+  {
+    "action": "tap",
+    "selector": "#hit"
+  },
+  {
+    "action": "tap",
+    "selector": "#hit"
+  },
+  {
+    "action": "tap",
+    "selector": "#hit"
+  },
+  {
+    "action": "tap",
+    "selector": "#hit"
+  },
+  {
+    "action": "tap",
+    "selector": "#hit"
+  },
+  {
+    "action": "tap",
+    "selector": "#hit"
+  },
+  {
+    "action": "tap",
+    "selector": "#hit"
+  },
+  {
+    "action": "tap",
+    "selector": "#hit"
+  },
+  {
+    "action": "tap",
+    "selector": "#hit"
+  },
+  {
+    "action": "tap",
+    "selector": "#hit"
+  },
+  {
+    "action": "text",
+    "selector": "#score",
+    "includes": "100"
+  },
+  {
+    "action": "visible",
+    "selector": "#restart"
+  },
+  {
+    "action": "tap",
+    "selector": "#restart"
+  },
+  {
+    "action": "text",
+    "selector": "#score",
+    "includes": "00"
+  },
+  {
+    "action": "visible",
+    "selector": "#hit"
+  }
+]
