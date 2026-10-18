@@ -49,3 +49,18 @@ GitHub PR merge remains blocked by independent security/rights review and approv
 Parent department: https://linear.app/pryntor/project/pryntor-engineering-git-and-open-source-systems-department-791494feb98e
 Charter: https://linear.app/pryntor/document/engineering-osie-charter-hugging-face-model-registry-and-independent-2f6ddfb938e9
 Trackers: PRY-347 image pilot, PRY-348 gate tooling, PRY-349 Hugging Face official organisation and finance, PRY-350 global radar.
+
+
+## 18 Oct 2026 | Actual GitHub-source intake for EXISTING operations ONLY
+
+These are verified **real upstream repositories**, retrieved from canonical GitHub metadata and pinned to their immutable source commits. The existing OSIE workflow stages **README.md and LICENSE only** into an ephemeral read-only review runner and performs a static risk-signal scan. It neither installs dependencies nor imports source code into a product. Independent legal/security and technical release reviews remain open.
+
+| Actual official Git origin | Immutable snapshot | Existing Pryntor destination | Runtime status |
+| --- | --- | --- | --- |
+| [JLPM22/MotionMatching](https://github.com/JLPM22/MotionMatching) | `35fc8ee9a0fd97f12de458ea81eaef7c8219d87a` | Existing Unity-compatible animation work, only after a real Unity 6 project and licensed source/motion library are identified | Source intake only, not installed; no claim to match the screenshot's exact AiKodex implementation |
+| [mrdoob/three.js](https://github.com/mrdoob/three.js) | `0978e2b62e53654ebe1a2c3032ebee0a4981c701` | Existing FORGE/Robotics browser 3D investigations, not replacing 2D WORLDWEAVER or hardware physics | Source intake only, no browser integration yet |
+| [morluto/rea](https://github.com/morluto/rea) | `c12d9eda87aa5a022ee7e18ea96d8d03bfd12e96` | Existing Engineering/Git REA permissioned overlays; authorised first-party analysis only | Source intake only, no MCP/CLI installation or arbitrary app reverse engineering |
+
+The repositories' root LICENSE files declare MIT. Confirm component-level dependencies, third-party datasets and assets independently. No 'AI employees', speculative agent swarms, Mac full-device control, private client access or copied application artwork. The Shipper post, drag+shift converter, Blender warehouse video and self-revising-paper figures do not themselves identify a verified compatible GitHub package, so they are not silently installed.
+
+The browser game's **actual executable change** is tracked separately under WORLDWEAVER existing [FORGE draft PR #6](https://github.com/LLoliwe/pryntor-forge/pull/6): an original deterministic foot-plant locomotion module with local tests and replay-safe drawing. This is not machine-learned motion matching and does not imply ZOWIBO brand art or production device readiness. No new projects, issues, departments or production deployment.
