@@ -82,6 +82,9 @@ def validate_candidate(record: object) -> list[str]:
             for field in REVIEW_EVIDENCE_FIELDS:
                 if not is_https_url(reviews.get(field)):
                     errors.append(f"approved candidate requires HTTPS {field} review evidence")
+        unresolved = record.get("unresolved_high_risk_count")
+        if isinstance(unresolved, bool) or not isinstance(unresolved, int) or unresolved != 0:
+            errors.append("approved candidate requires zero documented unresolved high-risk signals")
         evidence = record["benchmark_evidence"]
         if not isinstance(evidence, list) or not evidence or not all(is_https_url(x) for x in evidence):
             errors.append("approved candidate requires HTTPS benchmark evidence")
