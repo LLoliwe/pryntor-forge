@@ -145,9 +145,12 @@ def discover(queries, sources, limit, fetch=fetch_json, env=None):
         for query in queries:
             headers = {}
             key = {"gitee": "GITEE_TOKEN", "modelscope": "MODELSCOPE_API_KEY",
-                   "github": "GITHUB_TOKEN"}.get(source)
+                   "github": "GITHUB_TOKEN", "gitflic": "GITFLIC_TOKEN"}.get(source)
             if key and env.get(key):
-                headers["Authorization"] = ("token " if source == "gitee" else "Bearer ") + env[key]
+                token = env[key]
+                # GitFlic documents Authorization: token <token>; GitHub uses Bearer.
+                headers["Authorization"] = ("token " if source in ("gitee", "gitflic")
+                                            else "Bearer ") + token
             try:
                 response = fetch(endpoint(source, query, limit), headers)
                 entries = records(source, response, limit)
