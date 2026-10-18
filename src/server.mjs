@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public');
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8'};
-const paths={'/':'index.html','/index.html':'index.html','/app.js':'app.js','/styles.css':'styles.css','/core.mjs':'../src/core.mjs'};
+const paths={'/':'index.html','/index.html':'index.html','/app.js':'app.js','/styles.css':'styles.css','/core.mjs':'../src/core.mjs','/worldweaver':'worldweaver.html','/worldweaver.html':'worldweaver.html','/worldweaver.css':'worldweaver.css','/worldweaver.js':'worldweaver.js','/worldweaver-core.mjs':'../src/worldweaver.mjs'};
 export function createServer() { return http.createServer(async (req,res)=>{
   const route=(req.url||'/').split('?')[0];
   const rel=paths[route];
