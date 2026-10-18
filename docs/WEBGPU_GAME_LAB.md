@@ -50,3 +50,14 @@ Performance numbers are *targets*, not measured results. Reduced motion must get
 
 ## Acceptance definition
 Accept ONLY after two independent reviews: (a) engine correctness + licence + performance and (b) game design + brand art direction + functioning controls on physical devices. The existing public GitHub FORGE release remains the stable baseline; this pilot PR must not self-merge. If a feature fails one gate, keep it in the lab, not the playable games.
+
+
+## R0.1 real playable ocean game vertical slice
+**Source:** [public/labs/ocean-play.html](../public/labs/ocean-play.html). This separate self-contained local-first Canvas2D game extends the isolated lab to real controls, collectibles, earned upgrades, depth gates and a cosmetic preview.
+
+- Player can pilot a boat, jump in, swim left/right, ascend/dive, find pearls, unlock 60–145m and 145–230m exploration zones, and return safely when air runs out. More pearls and scenery are procedurally discovered beyond the authored opening region.
+- Five art-direction presets are selectable in the same game: ZOWIBO, LVL7, RELICBOUND, Route Zero and Moon Taxi. They are **conceptual treatments** and do not mean corresponding production games have been edited or passed independent canon review.
+- Distinct progress is saved locally per world. The cosmetic locker uses earn-only virtual currency, with no checkout, personal data, tracking or pay-to-progress.
+- WebGPU FFT reference remains an independent reference lab. This functioning game uses Canvas2D, not WebGPU, certified fluid simulation or full 3D.
+- Local source smoke tests and Node mock-DOM tests passed. GitHub `tests/ocean-play.test.mjs` checks the executable embedded game state and the hash-CSP HTTP route. Physical iPhone Safari, actual browser visual QA, GPU FPS and independent game design review remain release gates.
+- This is a bounded source-first engineering slice inside the **existing** FORGE PR. No new Pryntor project, company function, deployment, production integration or paid spend is authorized.
