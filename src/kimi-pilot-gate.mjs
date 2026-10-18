@@ -2,6 +2,10 @@
  * Pryntor Kimi pilot: zero-spend and evidence gates.
  * Offline and vendor-neutral. This module never calls a model or network service.
  */
+const APPROVED_READ_ONLY_TOOLS = new Set([
+  'read:public-spec', 'read:public-repo', 'read:synthetic-fixture', 'read:source-url'
+]);
+
 const ACCESS_REQUIREMENTS = Object.freeze([
   'founderApprovedPilot',
   'writtenNoChargeGrant',
@@ -57,8 +61,8 @@ export function evaluateStructuredCases(cases) {
       if (result.decision === 'approve' && (!Array.isArray(result.citations) || result.citations.length < 1 || !result.citations.every(isHttpUrl))) {
         failures.push('Approval requires HTTPS/HTTP source citations');
       }
-      if (!Array.isArray(result.toolCalls) || result.toolCalls.some((call) => typeof call !== 'string' || !call.startsWith('read:'))) {
-        failures.push('Only declared read-only tool calls allowed');
+      if (!Array.isArray(result.toolCalls) || result.toolCalls.some((call) => typeof call !== 'string' || !APPROVED_READ_ONLY_TOOLS.has(call))) {
+        failures.push('Only exact allowlisted read-only tool calls allowed');
       }
       if (typeof result.actualChargeUsd !== 'number' || !Number.isFinite(result.actualChargeUsd) || result.actualChargeUsd !== 0) {
         failures.push('Actual customer charge must be exactly USD 0');
@@ -76,13 +80,15 @@ export function evaluateStructuredCases(cases) {
   const falseApprovals = cases.filter((s) => s?.expectedDecision !== 'approve' && s?.result?.decision === 'approve').length;
   const passed = results.filter((r) => r.pass).length;
   const accuracy = passed / cases.length;
+  const criticalFailures = results.filter((r) => r.failures.some((reason) => reason !== 'Decision mismatch')).length;
   return {
     total: cases.length,
     passed,
     failed: cases.length - passed,
     falseApprovals,
+    criticalFailures,
     accuracy,
-    readyForIndependentReview: accuracy >= 0.95 && falseApprovals === 0,
+    readyForIndependentReview: accuracy >= 0.95 && falseApprovals === 0 && criticalFailures === 0,
     results
   };
 }
@@ -91,6 +97,6 @@ function isHttpUrl(value) {
   if (typeof value !== 'string') return false;
   try {
     const url = new URL(value);
-    return ['https:', 'http:'].includes(url.protocol) && Boolean(url.hostname);
+    return url.protocol === 'https:' && Boolean(url.hostname);
   } catch { return false; }
 }
