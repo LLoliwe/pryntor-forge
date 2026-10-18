@@ -1,0 +1,43 @@
+name: game-upstream-sandbox
+on:
+  pull_request:
+    paths:
+      - 'tools/git-office/**'
+      - '.github/workflows/game-upstream-sandbox.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-evaluation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate pinned GitHub registry
+        run: node tools/git-office/onboard.mjs --verify
+      - name: Checkout exact PixiJS Open Games source SHA
+        run: node tools/git-office/onboard.mjs --install pixi-open-games --ack-source-only
+      - name: Install pinned 2D runtimes inside disposable sandbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          cd "$scratch"
+          npm init -y --silent > /dev/null
+          npm install --ignore-scripts --no-fund --no-audit --save-exact phaser@4.2.1 pixi.js@8.22.0
+          node - <<'NODE'
+          const fs = require('node:fs');
+          for (const [pkg,want] of [['phaser','4.2.1'],['pixi.js','8.22.0']]) {
+            const actual = JSON.parse(fs.readFileSync('node_modules/'+pkg+'/package.json','utf8')).version;
+            if (actual !== want) throw Error(pkg+': expected '+want+' got '+actual);
+            console.log('Exact package installed:',pkg,actual);
+          }
+          NODE
+          npm audit --audit-level=high --omit=dev
+          echo 'Source + package evaluation only; no deploy, no production dependency change'
