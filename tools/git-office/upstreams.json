@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "captured_utc": "2026-10-18",
+  "policy": "R0; source checkout only; not production approved; never auto-execute upstream scripts, submodules or workflows",
+  "upstreams": [
+    {
+      "id": "pixi-open-games",
+      "repo": "pixijs/open-games",
+      "sha": "83b46762a5572430a94c01091353d0fa3d9909a4",
+      "license": "MIT",
+      "mode": "sandbox",
+      "use": "2D game architecture, state, animations, UI, transitions; code reference only until package and GSAP review",
+      "rights": "Bundled Figma source explicitly read-only; do not copy Figma design assets"
+    },
+    {
+      "id": "phaser-examples",
+      "repo": "phaserjs/examples",
+      "sha": "68140eca72525d5034b783a262270715ddc17b78",
+      "license": "UNCONFIRMED",
+      "mode": "reference-only",
+      "use": "Read gameplay, input and camera techniques",
+      "rights": "No repository-root LICENSE found; no source or asset redistribution without independent rights check"
+    },
+    {
+      "id": "rex-phaser-ui",
+      "repo": "rexrainbow/phaser3-rex-notes",
+      "sha": "3910746e4699f779b53a9ef4fc7285a902f487c9",
+      "license": "MIT",
+      "mode": "sandbox",
+      "use": "Menus, dialogue, interactive UI; Phaser 4 compatibility unverified",
+      "rights": "Do not assume Phaser 3 plugins work on Phaser 4"
+    },
+    {
+      "id": "pixi-assetpack",
+      "repo": "pixijs/assetpack",
+      "sha": "14b74b7fb028f82235c52b5d51cf54e424240d5d",
+      "license": "MIT",
+      "mode": "sandbox",
+      "use": "Asset optimization and bundles",
+      "rights": "Preserve notices and review package dependencies"
+    },
+    {
+      "id": "playcanvas-engine",
+      "repo": "playcanvas/engine",
+      "sha": "342ec1a04585928918d60fea1af900fbfec3cb7a",
+      "license": "MIT",
+      "mode": "sandbox",
+      "use": "Interactive 3D browser environment R&D",
+      "rights": "Engine license is distinct from editor or hosted service terms"
+    },
+    {
+      "id": "playcanvas-editor-mcp",
+      "repo": "playcanvas/editor-mcp-server",
+      "sha": "b19fa062e8379afac70575a95c032392633afa87",
+      "license": "MIT",
+      "mode": "sandbox",
+      "use": "Local editor automation experiment; Node 22.18+ needed",
+      "rights": "Remote editor connection and permissions require separate explicit setup"
+    },
+    {
+      "id": "kenney-godot-platformer",
+      "repo": "KenneyNL/Starter-Kit-3D-Platformer",
+      "sha": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+      "license": "MIT",
+      "mode": "sandbox",
+      "use": "Godot 4.6 movement, camera and gamepad starter",
+      "rights": "Repo documents bundled sprites/models/sfx as CC0; verify file-level provenance at import"
+    },
+    {
+      "id": "kenney-match3",
+      "repo": "KenneyNL/Starter-Kit-Match-3",
+      "sha": "4ddb3d2a50cbf247c79cafe9e7884d7d8f99c012",
+      "license": "MIT",
+      "mode": "sandbox",
+      "use": "Puzzle game logic, feedback and interface starter",
+      "rights": "Bundled audio/graphics provenance pending"
+    },
+    {
+      "id": "babylon-game-starter",
+      "repo": "EricEisaman/babylon-game-starter",
+      "sha": "3664048b7090c00e22f25766d32d7888d2359fe1",
+      "license": "MIT",
+      "mode": "sandbox",
+      "use": "3D input, inventory, interaction and mobile game starter",
+      "rights": "Third-party plugins and game assets require separate review"
+    }
+  ]
+}
