@@ -1,4 +1,4 @@
-import {fromPrompt, components, validateScene, addObject, removeObject, cadScriptFor, pascalHandoff, examplePrompt} from '/core.mjs';
+import {fromPrompt, components, validateScene, addObject, removeObject, cadScriptFor, pascalHandoff, examplePrompt, templates, auditScene, rotateObject, moveObject, footprint} from '/core.mjs';
 const $=id=>document.getElementById(id);
 const canvas=$('viewport'),ctx=canvas.getContext('2d');
 let scene=fromPrompt(examplePrompt), selected=null, yaw=-0.73,zoom=1.0,drag=false,moved=false,lastX=0;
@@ -36,29 +36,39 @@ function draw(){
  for(const p of back)polygon(p,'#60746813','#90c28f46',.6);
  for(let x=-w/2;x<=w/2+.01;x+=1)line(project(x,-d/2,0),project(x,-d/2,scene.room.height),'#acc5ab19',.65);
  const sorted=[...scene.objects].sort((a,b)=>{const za=a.x*Math.sin(yaw)+a.y*Math.cos(yaw);const zb=b.x*Math.sin(yaw)+b.y*Math.cos(yaw);return za-zb;});
- for(const o of sorted){const c=components[o.type];boxDraw(o.x,o.y,...c.size,c.color,o.id);}
+ for(const o of sorted){const c=components[o.type];boxDraw(o.x,o.y,footprint(o).width,footprint(o).depth,c.size[2],c.color,o.id);}
  for(const p of floor){ctx.fillStyle='#c5f37c';ctx.fillRect(p[0]-2,p[1]-2,4,4);}
  line(project(-w/2,d/2,0),project(-w/2,d/2,-.4),'#c8ee79');
  ctx.fillStyle='#9dbcaa';ctx.font='11px ui-monospace,monospace';ctx.textAlign='center';let pos=project(0,d/2,-.5);ctx.fillText(numeric(w)+' M',pos[0],pos[1]);
 }
 function update(){
+ $('scene-title').textContent=scene.name.toUpperCase();
  $('area').textContent=(scene.room.width*scene.room.depth).toFixed(1)+' m²';
  $('count').textContent=String(scene.objects.length).padStart(2,'0');
+ const report=auditScene(scene);$('audit-status').textContent=report.status.toUpperCase();$('occupancy').textContent=`${report.occupiedAreaM2.toFixed(1)} / ${report.floorAreaM2.toFixed(1)} m²`;
  $('dims').textContent=[scene.room.width,scene.room.depth,scene.room.height].map(n=>numeric(n)).join(' × ')+' M';
  const s=scene.objects.find(o=>o.id===selected?.id);selected=s||null;
+ $('object-list').innerHTML='<option value="">None selected</option>'+scene.objects.map(o=>`<option value="${o.id}">${shortType(o.type)} (${o.id})</option>`).join('');$('object-list').value=s?.id||'';
  $('selected-title').textContent=s?shortType(s.type):'None selected';
  $('selected-description').textContent=s?`Editable ${components[s.type].kind} envelope. Export source for further CAD work.`:'Select a component in the canvas to inspect its physical envelope.';
- $('remove').disabled=!s;
- $('properties').innerHTML=s?`<div class="proprow"><span>TYPE</span><strong>${s.type.toUpperCase()}</strong></div><div class="proprow"><span>DIMENSIONS</span><strong>${components[s.type].size.map(n=>n.toFixed(2)).join(' × ')} M</strong></div><div class="proprow"><span>POSITION</span><strong>${s.x.toFixed(2)}, ${s.y.toFixed(2)} M</strong></div><div class="proprow"><span>QUALITY</span><strong>ENVELOPE ONLY</strong></div>`:'<div class="proprow"><span>STATUS</span><strong>WAITING</strong></div>';
+ $('remove').disabled=!s;for(const control of ['rotate','move-left','move-right','move-up','move-down'])$(control).disabled=!s;
+ $('properties').innerHTML=s?`<div class="proprow"><span>TYPE</span><strong>${s.type.toUpperCase()}</strong></div><div class="proprow"><span>DIMENSIONS</span><strong>${components[s.type].size.map(n=>n.toFixed(2)).join(' × ')} M</strong></div><div class="proprow"><span>POSITION</span><strong>${s.x.toFixed(2)}, ${s.y.toFixed(2)} M</strong></div><div class="proprow"><span>ROTATION</span><strong>${s.rotation}°</strong></div><div class="proprow"><span>QUALITY</span><strong>ENVELOPE ONLY</strong></div>`:'<div class="proprow"><span>STATUS</span><strong>WAITING</strong></div>';
  draw();
 }
 function notice(message){$('notice').textContent=message;}
 function download(filename,content,mime='application/json'){let blob=new Blob([content],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+$('object-list').addEventListener('change',()=>{selected=scene.objects.find(o=>o.id===$('object-list').value)||null;update();});
+$('blueprints').innerHTML='<option value="">Choose a blueprint</option>'+Object.entries(templates).map(([key,t])=>`<option value="${key}">${t.name}</option>`).join('');
+$('blueprints').addEventListener('change',()=>{const t=templates[$('blueprints').value];if(!t)return;try{scene=fromPrompt(t.prompt);scene.name=t.name;$('prompt').value=t.prompt;$('blueprint-use').textContent=t.use;selected=null;update();notice(`Loaded ${t.name}: ${scene.objects.length} checked envelopes.`);}catch(err){notice(err.message);}});
 $('catalog').innerHTML=Object.entries(components).map(([t,c])=>`<button data-type="${t}"><span class="swatch" style="background:${c.color}"></span>${shortType(t)} <span style="margin-left:auto;color:#869a8d">+</span></button>`).join('');
 $('catalog').addEventListener('click',e=>{const b=e.target.closest('button[data-type]');if(!b)return;try{scene=addObject(scene,b.dataset.type);selected=scene.objects.at(-1);update();notice('Component added to the source scene.');}catch(err){notice(err.message);}});
 $('generate').addEventListener('click',()=>{try{scene=fromPrompt($('prompt').value);selected=null;update();notice(`Generated ${scene.objects.length} objects. Click to inspect.`);}catch(e){notice(e.message);}});
 $('reset').addEventListener('click',()=>{yaw=-.73;zoom=1;draw();notice('View reset.');});
 $('remove').addEventListener('click',()=>{if(!selected)return;scene=removeObject(scene,selected.id);selected=null;update();notice('Selected component removed.');});
+$('rotate').addEventListener('click',()=>{if(!selected)return;try{scene=rotateObject(scene,selected.id);update();notice('Rotation validated.')}catch(err){notice(err.message);}});
+for(const [control,dx,dy] of [['move-left',-.25,0],['move-right',.25,0],['move-up',0,-.25],['move-down',0,.25]])$(control).addEventListener('click',()=>{if(!selected)return;try{scene=moveObject(scene,selected.id,selected.x+dx,selected.y+dy);update();notice('Move validated.')}catch(err){notice(err.message);}});
+$('import-json').addEventListener('change',async(e)=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>100000)throw new Error('JSON exceeds 100 KB limit');const candidate=validateScene(JSON.parse(await file.text()));scene=candidate;selected=null;$('blueprints').value='';update();notice(`Imported and validated ${scene.objects.length} envelopes.`);}catch(err){notice(`Import rejected: ${err.message}`);}finally{e.target.value='';}});
+$('export-audit').addEventListener('click',()=>{download('pryntor-forge-spatial-audit.json',JSON.stringify(auditScene(scene),null,2));notice('Preflight exported. Only 2D axis-aligned envelope overlap checked.');});
 $('export-json').addEventListener('click',()=>{download('pryntor-forge-scene.json',JSON.stringify(validateScene(scene),null,2));notice('Scene JSON exported.');});
 $('export-cad').addEventListener('click',()=>{if(!selected){notice('Select a component in the scene to export its CAD envelope.');return;}download(selected.type+'-envelope.py',cadScriptFor(selected.type),'text/x-python');notice('cadgen 0.7.21 source exported. Generation requires upstream runtime.');});
 $('export-pascal').addEventListener('click',()=>{download('pascal-handoff.json',JSON.stringify(pascalHandoff(scene),null,2));notice('Handoff exported. Use an agent connected to Pascal MCP.');});

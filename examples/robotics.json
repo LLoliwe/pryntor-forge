@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "0.2",
+  "name": "Robotics test cell",
+  "room": {
+    "width": 8,
+    "depth": 6,
+    "height": 3.1
+  },
+  "objects": [
+    {
+      "id": "workbench-1",
+      "type": "workbench",
+      "x": 0.05,
+      "y": -0.225,
+      "rotation": 0
+    },
+    {
+      "id": "workbench-2",
+      "type": "workbench",
+      "x": 0.05,
+      "y": 1.375,
+      "rotation": 0
+    },
+    {
+      "id": "cabinet-1",
+      "type": "cabinet",
+      "x": -0.375,
+      "y": -1.125,
+      "rotation": 0
+    },
+    {
+      "id": "cabinet-2",
+      "type": "cabinet",
+      "x": 1.225,
+      "y": -1.125,
+      "rotation": 0
+    },
+    {
+      "id": "robot-1",
+      "type": "robot",
+      "x": 0.35,
+      "y": -1.875,
+      "rotation": 0
+    },
+    {
+      "id": "robot-2",
+      "type": "robot",
+      "x": 1.95,
+      "y": -0.275,
+      "rotation": 0
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "0.2",
+  "name": "Science discovery lab",
+  "room": {
+    "width": 9,
+    "depth": 7,
+    "height": 3.1
+  },
+  "objects": [
+    {
+      "id": "table-1",
+      "type": "table",
+      "x": 0.175,
+      "y": 0.1,
+      "rotation": 0
+    },
+    {
+      "id": "table-2",
+      "type": "table",
+      "x": -1.425,
+      "y": 0.1,
+      "rotation": 0
+    },
+    {
+      "id": "table-3",
+      "type": "table",
+      "x": 0.175,
+      "y": -1.5,
+      "rotation": 0
+    },
+    {
+      "id": "table-4",
+      "type": "table",
+      "x": 0.175,
+      "y": 1.7,
+      "rotation": 0
+    },
+    {
+      "id": "tank-1",
+      "type": "tank",
+      "x": 1.6,
+      "y": 0.2,
+      "rotation": 0
+    },
+    {
+      "id": "tank-2",
+      "type": "tank",
+      "x": -1.6,
+      "y": -1.4,
+      "rotation": 0
+    },
+    {
+      "id": "shelf-1",
+      "type": "shelf",
+      "x": 1.7,
+      "y": -0.85,
+      "rotation": 0
+    },
+    {
+      "id": "shelf-2",
+      "type": "shelf",
+      "x": -1.5,
+      "y": 1.55,
+      "rotation": 0
+    },
+    {
+      "id": "chair-1",
+      "type": "chair",
+      "x": 1.375,
+      "y": 1.575,
+      "rotation": 0
+    },
+    {
+      "id": "chair-2",
+      "type": "chair",
+      "x": 1.375,
+      "y": -1.625,
+      "rotation": 0
+    },
+    {
+      "id": "chair-3",
+      "type": "chair",
+      "x": -0.225,
+      "y": -2.425,
+      "rotation": 0
+    },
+    {
+      "id": "chair-4",
+      "type": "chair",
+      "x": 0.575,
+      "y": -2.425,
+      "rotation": 0
+    }
+  ]
+}
