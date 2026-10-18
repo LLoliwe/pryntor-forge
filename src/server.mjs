@@ -8,7 +8,8 @@ const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8',
 const paths={'/':'index.html','/index.html':'index.html','/app.js':'app.js','/styles.css':'styles.css','/core.mjs':'../src/core.mjs',
   '/game-environment.mjs':'../src/game/environment.mjs',
   '/labs/ocean-webgpu.html':'labs/ocean-webgpu.html',
-  '/labs/ocean-play.html':'labs/ocean-play.html'};
+  '/labs/ocean-play.html':'labs/ocean-play.html',
+  '/labs/ocean-first-descent.html':'labs/ocean-first-descent.html'};
 const standardCsp="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'";
 function hashedInline(source,tag) {
   const re=new RegExp('<'+tag+'\\b[^>]*>([\\s\\S]*?)<\\/'+tag+'>','gi');
@@ -18,7 +19,7 @@ function labCsp(html) {
   // The upstream self-contained HTML requires inline code, but we allow only
   // byte-for-byte hash-verified scripts/styles, never unsafe-inline or remote code.
   const scripts=hashedInline(html,'script'),styles=hashedInline(html,'style');
-  if (scripts.length!==1 || styles.length!==1) throw new Error('Unexpected ocean lab bundle structure');
+  if (![1,2].includes(scripts.length) || ![1,2].includes(styles.length)) throw new Error('Unexpected ocean lab bundle structure');
   return "default-src 'none'; img-src 'self' data:; script-src "+scripts.join(' ')+"; style-src "+styles.join(' ')+
     "; connect-src 'none'; object-src 'none'; worker-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'";
 }
@@ -29,7 +30,7 @@ export function createServer() { return http.createServer(async (req,res)=>{
   const f=path.resolve(root,rel); // explicit whitelist above, no user-controlled paths
   try {
     const data=await readFile(f);
-    const isLab=route==='/labs/ocean-webgpu.html'||route==='/labs/ocean-play.html';
+    const isLab=route==='/labs/ocean-webgpu.html'||route==='/labs/ocean-play.html'||route==='/labs/ocean-first-descent.html';
     const csp=isLab?labCsp(data.toString('utf8')):standardCsp;
     res.writeHead(200,{'Content-Type':mime[path.extname(f)]||'text/javascript; charset=utf-8',
       'Content-Security-Policy':csp,'X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY'});
