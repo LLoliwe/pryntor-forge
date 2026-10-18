@@ -52,6 +52,32 @@ class RadarTests(unittest.TestCase):
         ]}}, 1)
         self.assertEqual(rows[0]["url"], "https://gitflic.ru/project/org/proj")
 
+    def test_gitflic_official_public_list_shape(self):
+        rows = radar.records("gitflic", [{"owner": {"alias": "team"},
+                                         "alias": "engine"}], 2)
+        self.assertEqual(rows[0]["url"], "https://gitflic.ru/project/team/engine")
+
+    def test_github_license_object_is_normalised_to_spdx(self):
+        rows = radar.records("github", {"items": [
+            {"full_name": "org/code", "license": {"spdx_id": "MIT"}}
+        ]}, 2)
+        self.assertEqual(rows[0]["licence_claim"], "MIT")
+
+    def test_permission_failure_not_mislabeled_as_empty_catalogue(self):
+        from urllib.error import HTTPError
+        def blocked(url, headers):
+            raise HTTPError(url, 403, "Forbidden", {}, None)
+        report = radar.discover(["robotics"], ["gitflic"], 2,
+                                fetch=blocked, env={})
+        self.assertEqual(report["provider_health"][0]["state"], "AUTH_REQUIRED")
+        self.assertFalse(report["coverage"]["complete"])
+
+    def test_empty_success_is_distinguishable_from_provider_outage(self):
+        report = radar.discover(["image"], ["gitflic"], 2,
+                                fetch=lambda url, headers: [], env={})
+        self.assertEqual(report["provider_health"][0]["state"], "OK_EMPTY")
+        self.assertTrue(report["coverage"]["complete"])
+
     def test_provider_failure_reported_instead_of_hidden(self):
         def fake_fetch(url, headers):
             if "api.github" in url:
@@ -63,6 +89,7 @@ class RadarTests(unittest.TestCase):
         self.assertEqual(len(report["candidates"]), 1)
         self.assertEqual(report["provider_health"][1]["state"], "UNAVAILABLE")
         self.assertIn("gitverse", report["manual_platforms"])
+        self.assertEqual(report["coverage"]["unavailable"], 1)
 
     def test_bad_slug_cannot_inject_url(self):
         rows = radar.records("github", {"items": [{"full_name": "../bad"}]}, 1)
