@@ -7,7 +7,8 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public'
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8'};
 const paths={'/':'index.html','/index.html':'index.html','/app.js':'app.js','/styles.css':'styles.css','/core.mjs':'../src/core.mjs',
   '/game-environment.mjs':'../src/game/environment.mjs',
-  '/labs/ocean-webgpu.html':'labs/ocean-webgpu.html'};
+  '/labs/ocean-webgpu.html':'labs/ocean-webgpu.html',
+  '/labs/ocean-play.html':'labs/ocean-play.html'};
 const standardCsp="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'";
 function hashedInline(source,tag) {
   const re=new RegExp('<'+tag+'\\b[^>]*>([\\s\\S]*?)<\\/'+tag+'>','gi');
@@ -28,7 +29,7 @@ export function createServer() { return http.createServer(async (req,res)=>{
   const f=path.resolve(root,rel); // explicit whitelist above, no user-controlled paths
   try {
     const data=await readFile(f);
-    const isLab=route==='/labs/ocean-webgpu.html';
+    const isLab=route==='/labs/ocean-webgpu.html'||route==='/labs/ocean-play.html';
     const csp=isLab?labCsp(data.toString('utf8')):standardCsp;
     res.writeHead(200,{'Content-Type':mime[path.extname(f)]||'text/javascript; charset=utf-8',
       'Content-Security-Policy':csp,'X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY'});
