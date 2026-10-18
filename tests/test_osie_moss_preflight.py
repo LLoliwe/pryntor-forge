@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 path = Path(__file__).resolve().parents[1] / "tools" / "osie_moss_preflight.py"
 spec = importlib.util.spec_from_file_location("osie_moss_preflight", path)
@@ -55,6 +55,15 @@ class MOSSPreflightTests(unittest.TestCase):
                           mod.inspect_manifest(manifest(), directory,
                                                cuda={"present": True})["blockers"])
 
+    def test_empty_weight_files_do_not_count_as_installed_model(self):
+        with TemporaryDirectory() as directory:
+            path = Path(directory)
+            (path / "model_index.json").write_text("{}")
+            (path / "pipeline_moss_image.py").write_text("# stub")
+            (path / "fake.safetensors").write_bytes(b"")
+            result = mod.inspect_manifest(manifest(), directory, cuda={"present": True})
+            self.assertIn("MODEL_WEIGHTS_MISSING_OR_INCOMPLETE", result["blockers"])
+
     def test_metadata_only_readiness_cannot_claim_model_executed(self):
         data = manifest()
         data.update({
@@ -68,7 +77,9 @@ class MOSSPreflightTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             (Path(directory) / "model_index.json").write_text("{}")
             (Path(directory) / "pipeline_moss_image.py").write_text("# mock; NOT run")
-            r = mod.inspect_manifest(data, directory, cuda={"present": True})
+            (Path(directory) / "mock.safetensors").write_bytes(b"x")
+            with patch.object(mod, "MIN_SNAPSHOT_BYTES", 1):
+                r = mod.inspect_manifest(data, directory, cuda={"present": True})
             self.assertEqual(r["status"], "PREREQUISITES_PRESENT_REVIEW_NOT_A_RELEASE")
             self.assertIn("No imports", r["attestation"])
 
