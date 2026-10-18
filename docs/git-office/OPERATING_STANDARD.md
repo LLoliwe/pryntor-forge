@@ -73,6 +73,6 @@ Every toolstack adoption PR must link: product owner; upstream revision + licens
 
 - Department: created as a Linear project; operating charter drafted.
 - Nine public GitHub repositories: exist; full SHA recorded and code-license screened (one reference-only).
-- Sandbox installation script: committed in **draft PR**, no successful network clone or upstream npm install yet.
-- This check can be tested offline with `node --test test/git-office.test.mjs`, but branch CI results and independent review remain pending.
+- Sandbox installation script: committed in **draft PR**. [GitHub Actions run 39112118250](https://github.com/LLoliwe/pryntor-forge/actions/runs/39112118250) independently executed SHA-pinned PixiJS Open Games source checkout and disposable installation of exact Phaser 4.2.1 and PixiJS 8.22.0 packages, including configured dependency audit. This is an ephemeral CI sandbox, not a deployed or product-installed game.
+- Offline safety suite and standard FORGE CI also passed on the onboarding PR; code-owner review and adoption signoff still remain pending.
 - GitHub organizational team permissions, enforced branch protections, real mobile Safari tests, working ZOWIBO repair and production release: **not completed or verified**.
