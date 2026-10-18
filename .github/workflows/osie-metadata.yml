@@ -40,11 +40,16 @@ jobs:
     timeout-minutes: 6
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - name: Stage immutable MOSS source in ephemeral scratch (NO model weights or inference)
+      - name: Stage exact immutable MOSS review files in scratch, no archive/weights
         run: |
-          python3 tools/osie_stage.py \
+          python3 tools/osie_sparse_stage.py \
             --repository OpenMOSS/MOSS-Image \
             --revision c1355e6b1986dfe8fba3c0455783a05899212342 \
+            --file README.md \
+            --file LICENSE \
+            --file requirements.txt \
+            --file inference_runtime.py \
+            --file pyproject.toml \
             --destination "${RUNNER_TEMP}/osie-moss" \
             --stage
       - name: Demonstrate staged model is not activated
