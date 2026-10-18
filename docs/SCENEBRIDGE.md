@@ -1,6 +1,6 @@
 # Pryntor SceneBridge R0: Blender to Unreal Engine 5
 
-**Status (18 October 2026): OFFLINE PREFLIGHT IMPLEMENTED AND TESTED; LIVE BLENDER EXPORT / UNREAL IMPORT NOT YET VERIFIED; BLENDER CI SMOKE TEST PROPOSED.**
+**Status (18 October 2026): BLENDER HEADLESS EXPORT AND OFFLINE PREFLIGHT VERIFIED IN CI; UNREAL IMPORT NOT YET VERIFIED.**
 
 Owner: Pryntor FORGE / Game Studios. Shared optional adapter for OMEGA R3, WORLDWEAVER, Studios and approved venture pilots. This is a standalone directory in the FORGE repository; it does not change existing browser gameplay or claim to produce finished games.
 
@@ -10,9 +10,17 @@ Owner: Pryntor FORGE / Game Studios. Shared optional adapter for OMEGA R3, WORLD
 - Offline Python-standard-library manifest validation with strict relative file inventory, SHA-256 digests, anti-traversal/symlink checks, material factor checking, source-rights declarations and no silent overwrite.
 - Deterministic import-job generation to /Game/Pryntor/SceneBridge/<scene>.
 - Unreal Editor-host Python adapter that verifies content again before attempting FBX/texture import and rebuilding native Unreal material nodes. Reports unmatched material slots and refuses to overwrite an existing destination.
-- Dependency-free unit tests and optional GitHub CI, including a pending real Blender smoke job on public runners. No account, telemetry, model API or paid compute required for preflight.
+- Dependency-free unit tests and optional GitHub CI, including a passing real Blender smoke job on a public runner. No account, telemetry, model API or paid compute required for preflight.
 
 **Not yet evidenced:** Unreal Python API compatibility on a particular UE5 release, actual Blender file export from the user's scene, native Unreal import, visual parity, procedural bake of complex Blender shaders, game collisions, navigation, physics, lighting, interactive gameplay, asset licensing truth, child-safety, performance or private-brand acceptance. All engine claims remain blocked until executed on a versioned workstation and independently reviewed.
+
+## Native Blender smoke evidence (18 October 2026)
+
+- Reproducible originally modelled procedural office with four Principled PBR materials.
+- GitHub Actions `SceneBridge offline checks`: https://github.com/LLoliwe/pryntor-forge/actions/runs/39108822697, SUCCESS at code head `b68ee8be3d223a0d78607142ac2cc42fffcbb70c`.
+- Blender 4.0.2 with Python 3.12.3 and distro NumPy 1.26.4 exported `OriginalOfficeCI.fbx` and `manifest.json`.
+- Separate offline validation returned `PASS: OriginalOfficeCI` and wrote `import-plan.json`.
+- No Unreal Editor binary or native UE test in this run. Nothing about UE import or appearance can be inferred from this smoke check.
 
 ## Runbook: three phases
 
