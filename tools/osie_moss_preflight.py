@@ -19,7 +19,9 @@ MODEL_IDS = frozenset({
     "openmoss-moss-image-sft",
 })
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
-MIN_SNAPSHOT_GIB = 20
+# Official Base weights are >20 GiB. This is only a lower-bound missing-weights
+# check, not proof that the downloaded checkpoint is complete or trustworthy.
+MIN_SNAPSHOT_BYTES = 20 * 1024**3
 
 
 def cuda_device_report(run=subprocess.run, which=shutil.which):
@@ -48,6 +50,10 @@ def inspect_manifest(record, local_snapshot=None, cuda=None):
            ("license_reviewed", "data_rights_reviewed", "security_reviewed",
             "cost_reviewed", "rollback_tested")):
         reasons.append("RIGHTS_SECURITY_COST_ROLLBACK_NOT_APPROVED")
+    if (isinstance(record.get("estimated_cash_cost_zar"), bool)
+            or not isinstance(record.get("estimated_cash_cost_zar"), (int, float))
+            or record["estimated_cash_cost_zar"] < 0):
+        reasons.append("COST_NOT_VERIFIED")
     if record.get("unresolved_high_risk_count") != 0:
         reasons.append("UNRESOLVED_SOURCE_RISK")
     if not record.get("independent_reviewer"):
@@ -61,6 +67,13 @@ def inspect_manifest(record, local_snapshot=None, cuda=None):
         elif not (snapshot / "model_index.json").is_file() or not (
             snapshot / "pipeline_moss_image.py").is_file():
             reasons.append("MODEL_SNAPSHOT_INCOMPLETE")
+        else:
+            # A two-file "snapshot" is not installed weights. Check for local
+            # real weight payload without reading 20+ GiB into RAM.
+            weights = list(snapshot.rglob("*.safetensors"))
+            if (not weights or any(f.is_symlink() or not f.is_file() for f in weights)
+                    or sum(f.stat().st_size for f in weights) < MIN_SNAPSHOT_BYTES):
+                reasons.append("MODEL_WEIGHTS_MISSING_OR_INCOMPLETE")
     if cuda is None:
         cuda = cuda_device_report()
     if not cuda.get("present"):
