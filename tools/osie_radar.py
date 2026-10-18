@@ -92,7 +92,9 @@ def records(source, payload, limit):
     elif source == "modelscope":
         items = payload.get("data", {}).get("models", [])
     elif source == "gitflic":
-        items = payload.get("_embedded", {}).get("projectList", [])
+        # GET /project returns a public-project array in current upstream docs;
+        # _embedded.projectList is used by other paged GitFlic methods.
+        items = payload if isinstance(payload, list) else payload.get("_embedded", {}).get("projectList", [])
     else:
         items = []
     if not isinstance(items, list):
@@ -121,6 +123,9 @@ def records(source, payload, limit):
             continue
         url = urls[source] + "/".join(quote(p, safe="") for p in parts)
         lic = item.get("license")
+        # GitHub Search returns a license object, not an SPDX string.
+        if source == "github" and isinstance(lic, dict):
+            lic = lic.get("spdx_id")
         if not lic and isinstance(item.get("tags"), list):
             lic = next((v[8:] for v in item["tags"] if isinstance(v, str) and v.startswith("license:")), None)
         result.append({
@@ -147,14 +152,26 @@ def discover(queries, sources, limit, fetch=fetch_json, env=None):
                 response = fetch(endpoint(source, query, limit), headers)
                 entries = records(source, response, limit)
                 found.extend(entries)
-                health.append({"source": source, "query": query, "state": "OK", "count": len(entries)})
+                health.append({"source": source, "query": query,
+                               "state": "OK" if entries else "OK_EMPTY", "count": len(entries)})
             except (HTTPError, URLError, ValueError, KeyError, TimeoutError, json.JSONDecodeError) as exc:
                 # Never log token-bearing headers, payloads or exception URLs.
+                if isinstance(exc, HTTPError) and exc.code in (401, 403):
+                    state = "AUTH_REQUIRED"
+                elif isinstance(exc, HTTPError) and exc.code == 429:
+                    state = "RATE_LIMITED"
+                else:
+                    state = "UNAVAILABLE"
                 health.append({"source": source, "query": query,
-                               "state": "UNAVAILABLE", "reason": type(exc).__name__})
+                               "state": state, "reason": type(exc).__name__})
     dedup = {item["url"]: item for item in found}
+    attempted = len(health)
+    available = sum(h["state"] in ("OK", "OK_EMPTY") for h in health)
     return {"generated_at": datetime.now(timezone.utc).isoformat(),
             "status": "DISCOVERY_ONLY_NOT_INSTALLED",
+            "coverage": {"attempted": attempted, "reachable": available,
+                         "unavailable": attempted - available,
+                         "complete": available == attempted},
             "candidates": sorted(dedup.values(), key=lambda x: (x["source"], x["id"])),
             "provider_health": health,
             "manual_platforms": MANUAL_ONLY,
