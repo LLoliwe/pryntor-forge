@@ -1,0 +1,14 @@
+{
+  "scene": {
+    "schemaVersion": "0.2",
+    "name": "Robot envelope navigation case",
+    "room": {"width": 9, "depth": 7, "height": 3.1},
+    "objects": [
+      {"id": "workbench-1", "type": "workbench", "x": 0, "y": 0, "rotation": 0},
+      {"id": "tank-1", "type": "tank", "x": 2.5, "y": 1.5, "rotation": 0}
+    ]
+  },
+  "start": {"x": -3.5, "y": 0},
+  "goal": {"x": 3.5, "y": 0},
+  "options": {"agentType": "robot", "clearanceM": 0.15}
+}
