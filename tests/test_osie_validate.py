@@ -72,6 +72,26 @@ class AcceptanceTests(unittest.TestCase):
     def test_independently_reviewed_metadata_can_pass(self):
         self.assertEqual(mod.validate_candidate(self.approved()), [])
 
+    def test_approved_without_review_records_is_blocked(self):
+        record = self.approved()
+        del record["review_evidence"]
+        self.assertTrue(any("review_evidence" in e for e in mod.validate_candidate(record)))
+
+    def test_missing_security_evidence_is_blocked(self):
+        record = self.approved()
+        del record["review_evidence"]["security"]
+        self.assertTrue(any("security review evidence" in e for e in mod.validate_candidate(record)))
+
+    def test_review_links_must_use_https(self):
+        record = self.approved()
+        record["review_evidence"]["license"] = "http://example.com/review"
+        self.assertTrue(any("license review evidence" in e for e in mod.validate_candidate(record)))
+
+    def test_reviewer_whitespace_and_case_spoof_is_rejected(self):
+        record = self.approved()
+        record["independent_reviewer"] = " AUTHOR "
+        self.assertTrue(any("independent" in e for e in mod.validate_candidate(record)))
+
     @staticmethod
     def approved():
         record = candidate()
@@ -84,6 +104,8 @@ class AcceptanceTests(unittest.TestCase):
             "cost_reviewed": True,
             "rollback_tested": True,
             "benchmark_evidence": ["https://example.com/evidence"],
+            "review_evidence": {kind: "https://example.com/" + kind
+                                for kind in mod.REVIEW_EVIDENCE_FIELDS},
             "independent_reviewer": "reviewer",
         })
         return record
