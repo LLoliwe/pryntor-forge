@@ -1,0 +1,13 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {evidenceRef} from '../src/kimi-pilot-gate.mjs';
+import {replayEvaluation} from '../src/kimi-offline-runner.mjs';
+const fixtures=JSON.parse(readFileSync(new URL('./fixtures/kimi/portfolio-v1.json',import.meta.url)));
+const envelope=()=>({kind:'fixture',modelVersion:'oracle-fixture-v1-NOT-A-MODEL',sourceRevision:'e7e38aefb3fc6dd464a25ec0a2c9d8da6cd7dc95',fixtureHash:evidenceRef(JSON.stringify(fixtures)),records:fixtures.map(f=>({caseId:f.caseId,decision:f.expectedDecision,citations:['https://github.com/LLoliwe/pryntor-forge/pull/17'],toolCalls:[],actualChargeUsd:0,latencyMs:0}))});
+test('40 frozen cases span five existing product tracks, fixture replay is explicitly not live',()=>{assert.equal(fixtures.length,40);assert.equal(new Set(fixtures.map(f=>f.project)).size,5);const r=replayEvaluation(fixtures,envelope());assert.equal(r.score.passed,40);assert.equal(r.liveModelResultsVerified,false);assert.equal(r.independentApproval,false)});
+test('one billed cent cannot be hidden in otherwise correct portfolio replay',()=>{const e=envelope();e.records[0].actualChargeUsd=.01;assert.equal(replayEvaluation(fixtures,e).score.readyForIndependentReview,false)});
+test('reordered outputs fail before scoring',()=>{const e=envelope();e.records.reverse();assert.throws(()=>replayEvaluation(fixtures,e),/reordered/)});
+test('changed prompts invalidate frozen fixture identity',()=>{const changed=structuredClone(fixtures);changed[0].prompt='changed';assert.throws(()=>replayEvaluation(changed,envelope()),/hash mismatch/)});
+test('model version and exact source revision are mandatory',()=>{const e=envelope();e.modelVersion='';assert.throws(()=>replayEvaluation(fixtures,e),/versioned/)});
+test('missing response cannot inflate denominator',()=>{const e=envelope();delete e.records[0];assert.throws(()=>replayEvaluation(fixtures,e),/Missing/)});
