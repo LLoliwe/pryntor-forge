@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "0.1",
+  "name": "Pryntor FORGE Studio",
+  "room": { "width": 7, "depth": 5, "height": 3.1 },
+  "objects": [
+    { "id": "robot-1", "type": "robot", "x": -2, "y": -1.5, "rotation": 0 },
+    { "id": "workbench-1", "type": "workbench", "x": 0, "y": -1.5, "rotation": 0 },
+    { "id": "workbench-2", "type": "workbench", "x": 2, "y": -1.5, "rotation": 0 },
+    { "id": "shelf-1", "type": "shelf", "x": -2, "y": 1.5, "rotation": 0 },
+    { "id": "shelf-2", "type": "shelf", "x": 0, "y": 1.5, "rotation": 0 },
+    { "id": "table-1", "type": "table", "x": 2, "y": 1.5, "rotation": 0 }
+  ]
+}
