@@ -57,11 +57,13 @@ def validate_candidate(record: object) -> list[str]:
         if not isinstance(record[field], bool):
             errors.append(f"{field} must be boolean")
     cost = record["estimated_cash_cost_zar"]
-    if isinstance(cost, bool) or not isinstance(cost, (int, float)) or cost < 0:
-        errors.append("estimated_cash_cost_zar must be nonnegative number")
+    if cost is not None and (isinstance(cost, bool) or not isinstance(cost, (int, float)) or cost < 0):
+        errors.append("estimated_cash_cost_zar must be nonnegative number or null when unknown")
     if not isinstance(record["benchmark_evidence"], list):
         errors.append("benchmark_evidence must be a list")
     if record["status"] == "approved":
+        if cost is None:
+            errors.append("approved candidate must have a verified numeric cash cost estimate")
         for field in ("license_reviewed", "data_rights_reviewed",
                       "security_reviewed", "cost_reviewed", "rollback_tested"):
             if record[field] is not True:
