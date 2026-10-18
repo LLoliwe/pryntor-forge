@@ -74,3 +74,25 @@ No new implementation defect found within tested plain-JSON replay scope. Author
 The 40 cases are policy-label fixtures, not product engineering benchmarks. No actual source patches, deterministic geometry, animation continuity frames, physics traces, merchant decisions against ledgers or controller simulation outputs are evaluated. Oracle copies expected labels intentionally and its perfect replay score demonstrates plumbing only. Abstention/reject label ambiguity and visible answers mean this is not a held-out model capability test. Do not report 40/40 as Kimi performance or a tangible ZOWIBO improvement. Gate/runner hardening is the tangible engineering improvement.
 
 Independent review remains LIMITED OFFLINE VALIDATION. Activation/merge/production approval NOT GRANTED.
+
+DRAG STATE EXERCISE, INDEPENDENT TEST FREEZE
+Authored test/kimi-drag-candidate.test.mjs before candidate source was available or inspected.
+Frozen test SHA256 fa44c97ca49048583857860fdc222e2a526053442b413e00c58e92a127f71daf
+23 contract cases; same harness selectable for baseline via DRAG_TEST_MODULE. Covers ownership, wrong-ID move/up/cancel, matching up/cancel, blur, stale movement, restart, finite coordinate validation, zero/negative coordinates and isolated instances.
+This is a synthetic engineering evidence exercise. It does not integrate with, release or verify an existing ZOWIBO product, browser event wiring, pointer capture, animation or physical Safari behavior.
+
+LIVE UI-DERIVED SYNTHETIC DRAG EXERCISE, INDEPENDENT RESULTS
+Parent operator reports ordinary authenticated Kimi chat, visible UI label Instant High. Reviewer independently tested source supplied by operator; hidden backend model/version not independently verified.
+Test freeze confirmed unchanged: fa44c97ca49048583857860fdc222e2a526053442b413e00c58e92a127f71daf
+Baseline source SHA256 1d80f9c2dbdced5fee538cfa769a24d4be6c1a3faf978247a95a118d74e861d5
+Candidate source SHA256 44263358e16b3d814eeb0a1927e65c6e81e4840822e8e092575e17f6df6cf013
+Baseline command: DRAG_TEST_MODULE=../src/kimi-drag-baseline.mjs node --test test/kimi-drag-candidate.test.mjs
+Candidate command: node --test test/kimi-drag-candidate.test.mjs
+Baseline result 3/23 passing, 20 failing. Candidate result 23/23 passing, zero failing.
+Raw logs: /workspace/scratch/6f5b860fc863/kimi-drag-baseline-results.txt and kimi-drag-candidate-results.txt.
+
+Observed improvement: candidate implements drag ownership, ignores second down/wrong-pointer events, adds cancel/blur lifecycle, ignores stale motion, restarts and rejects nonfinite/nonnumeric coordinates. Dependency-free closure source, no network/global access/imports. These are actual independently executed code results, not oracle labels. Baseline is deliberately defective synthetic supplied source, not another model's output or production ZOWIBO code. Baseline failures that call missing methods demonstrate missing contract features, not separate claims about unexercised state isolation.
+
+Post-hoc boundary analysis, outside frozen test scope: undefined/null/string pointer IDs are accepted; NaN pointer ID accepted but cannot match itself for up/cancel, so only blur recovers. Genuine browser PointerEvent IDs are finite numeric identifiers. Contract assumed valid IDs and specified finite validation only for clientX. Candidate must not be represented as validated for arbitrary malformed event IDs. If used as a public general-purpose state API, validate finite IDs and add separate tests before integration.
+
+No product wiring, touch capture/release, browser event binding, frame timing, physical Safari or ZOWIBO artwork/animation verified. No independent activation, merge, release or product safety approval. One narrow live UI-derived coding exercise supports further controlled evaluation, not vendor superiority or portfolio performance claims.

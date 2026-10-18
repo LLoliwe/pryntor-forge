@@ -156,3 +156,41 @@ transport, scheduler, retries, hosted service or paid fallback exists. Credentia
 no-overage grant and owner/reviewer approval remain prerequisites to live work.
 Model comparison must conceal oracle labels, freeze identical prompts for both
 providers and keep creative/product reviewer scoring separate from policy labels.
+
+## Authenticated ordinary-chat proof, 18 October 2026
+
+Founder explicitly approved the Kimi terms. Google sign-in visibly authenticated
+as Lebohang Loliwe. PRYNTOR OMEGA R3 was created with sanitized instructions saved
+under the verified 2000-character account limit. No private source or art uploaded.
+Project: https://www.kimi.ai/project/1a14ee72-0342-80e0-8000-0e1cf50a26e0
+Live chat: https://www.kimi.ai/chat/1a14ee91-ab42-827a-8000-091caf0b5a83?chat_enter_method=home
+
+Actual UI label was **Instant High**; hidden backend model/version unknown. No
+API key, paid API calls, Swarm, tools, plugins, upgrades or recurring jobs used.
+No provider billing ledger audited and no generation latency measurement made.
+
+Kimi answered five onboarding calibration questions consistently with supplied
+sanitized instructions, then produced `src/kimi-drag-candidate.mjs` for a synthetic
+single-pointer drag-state defect. Exact visible prompt/final answer preserved in
+`test/fixtures/kimi/live-drag-transcript.json`. This is NOT existing game source.
+The unchanged independent 23-case harness was frozen before candidate inspection.
+
+| Same frozen test suite | Pass | Fail |
+| --- | --- | --- |
+| Deliberately defective synthetic source | 3 | 20 |
+| Exact live Kimi output | 23 | 0 |
+
+Reproduce:
+```bash
+DRAG_TEST_MODULE=../src/kimi-drag-baseline.mjs node --test test/kimi-drag-candidate.test.mjs
+node --test test/kimi-drag-candidate.test.mjs
+npm test
+```
+The first command intentionally exits nonzero. Full suite including candidate:
+91/91 local tests pass. This is one unblinded coding exercise against broken
+source, not a Kimi-versus-baseline-model comparison or product quality benchmark.
+No game/browser integration, real-device test, creative improvement or release.
+Post-hoc malformed pointer IDs (including NaN) are accepted; NaN owner cannot match
+up/cancel. Further validation and integration review required before production.
+Do not change frozen scores to conceal that unsupported boundary. Feature remains
+opt-in and unused by the application. No independent activation/merge approval.

@@ -1,0 +1,3 @@
+// Exact Kimi ordinary-chat response code, not wired into any product.
+// UI label Instant High; backend model/version unverified.
+export function createDragState(){let active=false;let id=null;let x=0;const finite=(v)=>typeof v==="number"&&Number.isFinite(v);const matching=(e)=>Boolean(active&&e&&e.pointerId===id);return{down(e){if(active)return;if(!e||!finite(e.clientX))return;active=true;id=e.pointerId;x=e.clientX},move(e){if(!matching(e)||!finite(e.clientX))return;x=e.clientX},up(e){if(!matching(e))return;active=false;id=null},cancel(e){if(!matching(e))return;active=false;id=null},blur(){active=false;id=null},snapshot(){return{active,id,x}}}}
