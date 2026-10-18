@@ -21,7 +21,7 @@ test('deny dangerous events, broad permissions and secrets',()=>{
     safeWorkflow.replace('pull_request:', 'pull_request_target:'),
     safeWorkflow.replace('contents: read', 'contents: write'),
     safeWorkflow.replace('permissions:\n  contents: read', 'permissions: write-all'),
-    safeWorkflow.replace('node_modules', 'node_modules')+'\n      - run: echo ${{ secrets.PRIVATE_KEY }}',
+    safeWorkflow+'\n      - run: echo ${{ secrets.PRIVATE_KEY }}',
   ];
   for (const value of mutated) assert.ok(inspectWorkflow(value).length>0,'expected a rejection');
 });
