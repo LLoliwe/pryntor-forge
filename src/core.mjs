@@ -74,9 +74,10 @@ export function addObject(scene, type) {
 }
 export function cadScriptFor(type) {
   if (!Object.hasOwn(components, type)) throw new Error('Unsupported component');
-  const [w,d,h]=components[type].size;
-  // Simple placeholder envelopes, NOT manufactured/fit-verified CAD parts.
-  return `# Pryntor FORGE parametric ENVELOPE for ${type}\n# Requires cadquery installed. Units: mm. Not a fabrication-ready design.\nimport cadquery as cq\nshape = cq.Workplane("XY").box(${Math.round(w*1000)}, ${Math.round(d*1000)}, ${Math.round(h*1000)})\ncq.exporters.export(shape, "${type}-envelope.step")\n`;
+  const [w,d,h] = components[type].size;
+  // Source-compatible with upstream text-to-cad / cadgen 0.7.21's documented model contract.
+  // This is a bounding envelope, not an independently verified part.
+  return `# Pryntor FORGE parametric ENVELOPE for ${type}\n# For text-to-cad's cadgen 0.7.21. Units: mm.\n# Not a fabrication-ready design; no collision or load verification.\nfrom cadgen import build123d as bd\nfrom cadgen import step\n\n@step(out="${type}-envelope.step")\ndef model():\n    shape = bd.Box(${Math.round(w*1000)}, ${Math.round(d*1000)}, ${Math.round(h*1000)})\n    shape.label = "${type} envelope"\n    return shape\n\nif __name__ == "__main__":\n    model()\n`;
 }
 export function pascalHandoff(scene) {
   const s=validateScene(scene);

@@ -60,7 +60,7 @@ $('generate').addEventListener('click',()=>{try{scene=fromPrompt($('prompt').val
 $('reset').addEventListener('click',()=>{yaw=-.73;zoom=1;draw();notice('View reset.');});
 $('remove').addEventListener('click',()=>{if(!selected)return;scene=removeObject(scene,selected.id);selected=null;update();notice('Selected component removed.');});
 $('export-json').addEventListener('click',()=>{download('pryntor-forge-scene.json',JSON.stringify(validateScene(scene),null,2));notice('Scene JSON exported.');});
-$('export-cad').addEventListener('click',()=>{if(!selected){notice('Select a component in the scene to export its CAD envelope.');return;}download(selected.type+'-envelope.py',cadScriptFor(selected.type),'text/x-python');notice('CAD envelope source exported. Requires CadQuery.');});
+$('export-cad').addEventListener('click',()=>{if(!selected){notice('Select a component in the scene to export its CAD envelope.');return;}download(selected.type+'-envelope.py',cadScriptFor(selected.type),'text/x-python');notice('cadgen 0.7.21 source exported. Generation requires upstream runtime.');});
 $('export-pascal').addEventListener('click',()=>{download('pascal-handoff.json',JSON.stringify(pascalHandoff(scene),null,2));notice('Handoff exported. Use an agent connected to Pascal MCP.');});
 canvas.addEventListener('pointerdown',e=>{drag=true;moved=false;lastX=e.clientX;canvas.setPointerCapture(e.pointerId);});
 canvas.addEventListener('pointermove',e=>{if(!drag)return;let diff=e.clientX-lastX;if(Math.abs(diff)>2)moved=true;yaw+=diff*.008;lastX=e.clientX;draw();});

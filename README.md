@@ -37,11 +37,11 @@ npm run check
 
 ```text
 Text grammar -> validated scene JSON (metres) -> editable browser preview
-                                             |-> export CAD envelope Python source
+                                             |-> export CAD envelope cadgen Python source
                                              |-> export Pascal agent handoff JSON
 ```
 
-**text-to-cad by Jake Fitzgerald:** External inspiration and recommended upstream modelling tool for actual parametric CAD, STEP and STL. Repo: https://github.com/earthtojake/text-to-cad . To use its modelling skills with your agent, follow upstream installation instructions. FORGE alpha currently exports only an intentionally crude CadQuery bounding-box envelope; it does not call text-to-cad or generate manufacture-ready parts. Do not confuse a bounding envelope with structural verification.
+**text-to-cad by Jake Fitzgerald:** External inspiration and recommended upstream modelling tool for actual parametric CAD, STEP and STL. Repo: https://github.com/earthtojake/text-to-cad . To use its modelling skills with your agent, follow upstream installation instructions. FORGE alpha exports a cadgen 0.7.21-compatible Python model defining an intentionally crude rectangular bounding envelope. Running it inside the verified upstream cadgen runtime should generate STEP, but that runtime and output have not been executed or independently measured in FORGE CI. It does not yet invoke text-to-cad itself or make a fabrication-ready part. Do not confuse a bounding envelope with structural verification.
 
 **Pascal Editor:** External spatial modelling tool for real architecture scenes, available at https://github.com/pascalorg/editor . Follow upstream CLI and MCP installation instructions. FORGE's JSON handoff records the desired dimensions and components for an agent to recreate **after** connecting Pascal's MCP. FORGE does not directly call Pascal or certify its geometry.
 
@@ -52,7 +52,7 @@ Both upstream projects are MIT-licensed; FORGE contains no copied source code fr
 - Portable source-first scene with schema validation, known supported component types and object bounds.
 - Local-only browser, no network calls, no build step, no runtime npm dependencies.
 - Mouse/touch selection, orbit and zoom, primitive envelopes with real metre dimensions.
-- Deterministic grammar, JSON scene export, parametric envelope output, Pascal handoff artifact.
+- Deterministic grammar, JSON scene export, parametric cadgen model source for bounded STEP envelopes, Pascal handoff artifact.
 - CI and tests for valid and invalid inputs.
 
 ## Not yet implemented
