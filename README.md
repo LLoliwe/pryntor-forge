@@ -23,6 +23,20 @@ The prompt parser is intentionally bounded and deterministic. For example:
 
 It parses room dimensions and supported item counts. It does **not** claim unrestricted text-to-3D AI.
 
+## Ocean spatial pilot — interactive technical showcase
+
+The existing FORGE v0.2 branch also includes **The Blue Below**, a self-contained 3D spatial exploration proof for the existing WORLDWEAVER/Ocean workstream. It is a **pilot**, not a new franchise, production game, finished character art, AI-model installation or release.
+
+After `npm start`, open **http://127.0.0.1:4173/demos/ocean-forge.html**.
+
+- Swim using WASD or arrow keys, drag to look; Q and E ascend and dive; Shift boosts. On phones, use the joystick, DIVE / ASCEND / BOOST touch controls
+- Perspective-rendered moving seafloor and walls, schools of fish, animated vegetation, bubbles, bioluminescent shards, changing biomes and an actively pursuing creature
+- Original shader-based WebGL2 scene, with a no-dependency, camera-projected software 3D fallback if WebGL is unavailable
+- Eight collectible light fragments, oxygen and depth HUD, moving hunter and auto emergency ascent
+- Isolated same-origin static route. Content Security Policy denies all external network connections; no model weights, API keys, accounts, telemetry, subscriptions or purchased content
+
+**Evidence and limitations:** Node source/routes/metadata tests run in FORGE CI; local Chromium fallback smoke verified desktop 1440×900 and mobile 390×844 button activation, dive input/depth change and no JS exceptions. Host environment did not expose WebGL, so the GPU shader path and physical iPhone/Safari quality/performance are **not yet certified**. Image/model licensors and original ZOWIBO canon are separate release gates; this procedural demo does not use proprietary ZOWIBO assets. No native ship navigation, persistent save game or monetization has been implemented.
+
 ## CLI
 
 ```bash
