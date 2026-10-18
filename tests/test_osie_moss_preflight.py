@@ -72,6 +72,7 @@ class MOSSPreflightTests(unittest.TestCase):
             "data_rights_reviewed": True, "security_reviewed": True,
             "cost_reviewed": True, "rollback_tested": True,
             "unresolved_high_risk_count": 0,
+            "estimated_cash_cost_zar": 0,
             "independent_reviewer": "separately-verified-human",
         })
         with TemporaryDirectory() as directory:
