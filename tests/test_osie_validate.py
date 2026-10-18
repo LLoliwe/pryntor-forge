@@ -34,6 +34,16 @@ class AcceptanceTests(unittest.TestCase):
     def test_intake_passes_without_falsely_claiming_approval(self):
         self.assertEqual(mod.validate_candidate(candidate()), [])
 
+    def test_unknown_cost_allowed_only_during_intake(self):
+        record = candidate()
+        record["estimated_cash_cost_zar"] = None
+        self.assertEqual(mod.validate_candidate(record), [])
+
+    def test_unknown_cost_blocks_approval(self):
+        record = self.approved()
+        record["estimated_cash_cost_zar"] = None
+        self.assertTrue(any("cash cost" in e for e in mod.validate_candidate(record)))
+
     def test_missing_mandatory_metadata_fails(self):
         record = candidate()
         del record["declared_license"]
