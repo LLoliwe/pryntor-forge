@@ -1,0 +1,27 @@
+name: OSIE Rusteerio isolated smoke (draft)
+on:
+  pull_request:
+    paths:
+      - 'tools/rusteerio_extract.mjs'
+      - 'tests/rusteerio_extract.test.mjs'
+      - '.github/workflows/rusteerio-opt-in.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Offline contract checks
+        run: |
+          node --check tools/rusteerio_extract.mjs
+          node --test tests/rusteerio_extract.test.mjs
+      - name: Pinned native sandbox install, not production deployment
+        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund rusteerio@2.0.0
+      - name: Actual Rusteerio single and batch native smoke
+        run: node --test tests/rusteerio_extract.test.mjs
