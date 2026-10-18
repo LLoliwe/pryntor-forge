@@ -42,11 +42,13 @@ function draw(){
  ctx.fillStyle='#9dbcaa';ctx.font='11px ui-monospace,monospace';ctx.textAlign='center';let pos=project(0,d/2,-.5);ctx.fillText(numeric(w)+' M',pos[0],pos[1]);
 }
 function update(){
+ $('scene-title').textContent=scene.name.toUpperCase();
  $('area').textContent=(scene.room.width*scene.room.depth).toFixed(1)+' m²';
  $('count').textContent=String(scene.objects.length).padStart(2,'0');
  const report=auditScene(scene);$('audit-status').textContent=report.status.toUpperCase();$('occupancy').textContent=`${report.occupiedAreaM2.toFixed(1)} / ${report.floorAreaM2.toFixed(1)} m²`;
  $('dims').textContent=[scene.room.width,scene.room.depth,scene.room.height].map(n=>numeric(n)).join(' × ')+' M';
  const s=scene.objects.find(o=>o.id===selected?.id);selected=s||null;
+ $('object-list').innerHTML='<option value="">None selected</option>'+scene.objects.map(o=>`<option value="${o.id}">${shortType(o.type)} (${o.id})</option>`).join('');$('object-list').value=s?.id||'';
  $('selected-title').textContent=s?shortType(s.type):'None selected';
  $('selected-description').textContent=s?`Editable ${components[s.type].kind} envelope. Export source for further CAD work.`:'Select a component in the canvas to inspect its physical envelope.';
  $('remove').disabled=!s;for(const control of ['rotate','move-left','move-right','move-up','move-down'])$(control).disabled=!s;
@@ -55,6 +57,7 @@ function update(){
 }
 function notice(message){$('notice').textContent=message;}
 function download(filename,content,mime='application/json'){let blob=new Blob([content],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+$('object-list').addEventListener('change',()=>{selected=scene.objects.find(o=>o.id===$('object-list').value)||null;update();});
 $('blueprints').innerHTML='<option value="">Choose a blueprint</option>'+Object.entries(templates).map(([key,t])=>`<option value="${key}">${t.name}</option>`).join('');
 $('blueprints').addEventListener('change',()=>{const t=templates[$('blueprints').value];if(!t)return;try{scene=fromPrompt(t.prompt);scene.name=t.name;$('prompt').value=t.prompt;$('blueprint-use').textContent=t.use;selected=null;update();notice(`Loaded ${t.name}: ${scene.objects.length} checked envelopes.`);}catch(err){notice(err.message);}});
 $('catalog').innerHTML=Object.entries(components).map(([t,c])=>`<button data-type="${t}"><span class="swatch" style="background:${c.color}"></span>${shortType(t)} <span style="margin-left:auto;color:#869a8d">+</span></button>`).join('');

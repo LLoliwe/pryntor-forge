@@ -2,7 +2,7 @@
 
 **Spaces meet things. An open-source, local-first scene playground for makers, robotics builders and spatial creators.**
 
-> **Alpha / working vertical slice.** FORGE is not yet an AI CAD generator, professional CAD solver, physics simulator, or Pascal importer. The first release proves a common *scene contract*, real-time editable preview, deterministic text grammar, and safe source export.
+> **Alpha / working vertical slice.** FORGE is not yet an AI CAD generator, professional CAD solver, physics simulator, or Pascal importer. The alpha demonstrates a portable *scene contract*, editable preview, bounded text grammar, orientation-aware 2D footprint validation, and safe source export.
 
 ![MIT](https://img.shields.io/badge/license-MIT-b4e776) ![Node](https://img.shields.io/badge/node-%E2%89%A520-caf178) ![Status](https://img.shields.io/badge/status-early%20alpha-49594c)
 
@@ -15,7 +15,7 @@ npm start
 # Open http://127.0.0.1:4173
 ```
 
-No signup, API key, telemetry, cloud processing, dependencies or paid model credits. Node 20 or newer required. The included app shows an interactive isometric workshop. Orbit, zoom, select, add and remove furniture and tools. Use **Scene JSON**, **CAD envelope**, or **Pascal handoff** to download your work.
+No signup, API key, telemetry, cloud processing, dependencies or paid model credits. Node 20 or newer required. The included app shows an interactive isometric workspace. Choose a venture blueprint, orbit, zoom, select via canvas or object list, add, rotate, move and remove geometric envelopes. Import source JSON and download spatial preflight audit evidence. Use **Scene JSON**, **CAD envelope**, or **Pascal handoff** to download your work.
 
 The prompt parser is intentionally bounded and deterministic. For example:
 
@@ -57,14 +57,14 @@ Both upstream projects are MIT-licensed; FORGE contains no copied source code fr
 
 ## Not yet implemented
 
-- Real text-to-cad plugin invocation, Pascal MCP live scene creation, file import, STEP/GLB export, collision verification, physics, mobile viewport validation, accessibility audit, scene persistence or browser-level end-to-end tests.
+- Real text-to-cad plugin invocation, Pascal MCP live scene creation, STEP/GLB binary export, real 3D/robot motion collision verification, physics, published mobile viewport validation, full accessibility audit, scene persistence or browser-level end-to-end CI tests.
 - No claim of manufacturing safety, production readiness or independent review.
 
 ## Road to a community-scale developer product
 
 1. Open a public roadmap and recruit robotics, CAD, architecture and science-education maintainers.
 2. Add **real** adapters to upstream CAD and Pascal toolchains, feature-detecting capabilities rather than assuming API support.
-3. Add round-trip source tests: create → edit → export → import → geometric comparison.
+3. Add round-trip external source tests: create in FORGE → export → import upstream CAD/Pascal → external geometry comparison.
 4. Make the demo reproducible, with a one-minute walkthrough video, browser CI, docs and accessibility testing.
 5. Ship 3 showcase scenes: maker workshop, science classroom, accessible apartment. Public release only after license, privacy and safety review.
 
