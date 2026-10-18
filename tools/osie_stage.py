@@ -52,7 +52,11 @@ def unpack_safely(data, destination):
             raise ValueError("archive member limit")
         for member in members:
             path = PurePosixPath(member.name)
-            if path.is_absolute() or ".." in path.parts or len(path.parts) < 2:
+            if path.is_absolute() or ".." in path.parts or not path.parts:
+                raise ValueError("unsafe archive path")
+            if len(path.parts) == 1 and member.isdir():
+                continue
+            if len(path.parts) < 2:
                 raise ValueError("unsafe archive path")
             if not member.isfile() and not member.isdir():
                 raise ValueError("links or special file rejected")
