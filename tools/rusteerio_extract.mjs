@@ -11,7 +11,7 @@ export const LIMITS = Object.freeze({bytesPerPage: 2 * 1024 * 1024, batchPages: 
 /** Filter known non-public IP literals and local hostnames from untrusted links.
  * This is NOT a DNS-resolution or SSRF-safe fetch authorisation policy. */
 function publicHostname(value) {
-  const h=String(value).toLowerCase().replace(/^\\[|\\]$/g,'').replace(/\\.$/,'');
+  const h=String(value).toLowerCase().replace(/^\[|\]$/g,'').replace(/\.$/,'');
   if (!h || h==='localhost' || h.endsWith('.localhost') || h.endsWith('.local') ||
       h.endsWith('.internal') || h.endsWith('.home.arpa')) return false;
   const ip=isIP(h);
@@ -19,7 +19,7 @@ function publicHostname(value) {
     const [a,b,c]=h.split('.').map(Number);
     if (a===0||a===10||a===127||a>=224||a===255||
         (a===100&&b>=64&&b<=127)||(a===169&&b===254)||
-        (a===172&&b>=16&&b<=31)||(a===192&&(b===168||b===0||b===0))||
+        (a===172&&b>=16&&b<=31)||(a===192&&(b===168||b===0))||
         (a===198&&(b===18||b===19))) return false;
     if ((a===192&&b===0&&c===2)||(a===198&&b===51&&c===100)||
         (a===203&&b===0&&c===113)) return false;
