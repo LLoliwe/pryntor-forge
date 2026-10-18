@@ -1,46 +1,48 @@
-# Pryntor WORLDWEAVER v0.1 | playable-world experiment
+# WORLDWEAVER R1 | evidence-driven Pryntor company adoption
 
-**Status: draft-only prototype, not public-ready or automatically image-to-game.**
+**Decision date:** 18 Oct 2026. **Classification:** internal prototype, independent review required.
 
-## Run and verify
+## Canon and document precedence
 
-Start FORGE with Node 20+ using npm start, then visit http://127.0.0.1:4173/worldweaver. Play with A/D or arrows, jump with Space or up, and use mobile touch controls. Tap Edit to place platforms, gems and moving hazards, then export world JSON. Run npm test and npm run check.
+1. **Pryntor Group Omega Knowledge Kernel, 18 October 2026:** https://docs.google.com/document/d/14EuuUkEMYv4XfJvKNEuLT2JmDlJw-h5d1brjwwz4b6A/edit
+   - Latest founder decisions govern; no unapproved charges, self-merges, children's data, public release, recruiting or customer outreach before site+founder approval.
+   - Company group ventures remain distinct; R0 experiments do not imply company-wide deployed services.
+2. **ZOWIBO SPARK! R1 and Glow Garden R2 evidence register:** https://docs.google.com/document/d/12qrb1RLpG9Z9rCHqdp1kgsThc6ZB2StftrxV4Ludx3Y/edit
+   - Preserve approved PRIVATE Glow Garden checkpoint and creative joy. The old R1 iPhone/file experience failed founder review. No replacement of its source, no unlicensed copy into public repo.
+   - Do not conflate preschool SPARK! with older-age RELICBOUND or rejected visual option A/B.
+3. **Studios Kids PILOT 01:** https://docs.google.com/document/d/1dTcjJ5kMHfeEpXbTvIi6Dz2cP0vvaZqunNm0tsgvkic/edit
+   - 90-second micro-adventures: predict, manipulate, observe, explain, transfer. Battery + wire + switch AND truth table, no fake electric microphysics. Independent age/teacher/legal reviews before public use.
+4. **LVL7 Creative Direction:** https://docs.google.com/document/d/1ZGdZ18-scnGn2LLDfzlDH4PefGPUmuFA3V1lzClvfrQ/edit
+   - Tactile, joyful, premium teaching materials with factual content, real learning utility and teacher checks. Generic clip art rejected.
+5. **Upstream public reference:** https://github.com/img2threejs/pixi2d
+   - Agent-guided editable layers, provenance and real-canvas evidence. Explicitly not automatic segmentation/inpainting. No copied source was used in R1.
 
-Importing a PNG, JPEG or WebP under 8 MB is rights-gated and local. It becomes a composited background. It is not a segmented character layer. Export excludes raw image bytes, so a visual scene using imported art cannot round-trip through JSON without the source file. We do not claim inference of hidden pixels or full image-to-game conversion.
+## R1 delivered, observable in source and tests
 
-The proof is original code: no upstream Pixi2D files, copyrighted third-party sprites, cloud credentials, telemetry, build-step downloads or metered inference are involved.
+- Dependency-free deterministic 60-Hz scene simulation, bounded 160-object schema, strict allowed primitive types, no inferred hidden pixels or paid model calls.
+- Coyote and buffered jumping, velocity control, ceiling/side collisions, checkpoints, replayable traces, 17 unit tests, 8-case circuit truth validation.
+- Accessible controls, scene JSON import/export, local rights-gated backdrop, private standalone single HTML without hosting.
+- Two-tier evidence: machine-core test pass and ongoing separate child, artistic, browser/device, privacy/rights and founder release gates. Green code does not prove animation or customer value.
 
-## Beyond a pretty animation
+## Company-wide adoption routing, not blanket deployment
 
-The reusable source contract in src/worldweaver.mjs separates deterministic physics, pickups, moving hazards, camera and finish conditions from the renderer. Scene edits are validated, game rules can be replayed against a fixed clock, and the browser renderer remains replaceable. AI can eventually propose a scene, but independent tests, human reviewers and rights gates must certify it.
+| Product | Suggested safe use | Release blockers |
+|---|---|---|
+| ZOWIBO | Original privately reviewed playable story and private SPARK! proof, preserve founder-liked Glow Garden art/gameplay | Accepted character rig/animation, rights, art direction, parent/child usability, real iPhone, safe distribution |
+| LVL7 | Reuse circuit truth model and prototype Predict → Manipulate → Explain → Transfer loops | Qualified science/educator review, curriculum suitability, WCAG, value study |
+| FORGE | Keep generic deterministic engine and scene schema open source after independent code review | Browser test, security and license audit, permission to merge |
+| Game Studios / RELICBOUND | Borrow play-feel, repeatable game-state testing, checkpoints as design reference | Separate older-age identity and production gameplay architecture, art, performance |
+| Studios / AFTERLIGHT | Scene graph and camera timing reference only | Premium independent director/art/audio review, actual animated sequences |
+| ATLAS | Private evidence-backed demonstration to partners only after founder approval | Live site, legal rights, signed reviewer acceptance, qualified commercial demand |
 
-## Company-wide pilots
+## R2 acceptance checklist
 
-- **ZOWIBO:** flagship proprietary-IP playable story using privately stored, rights-cleared mascot layers, age-appropriate agency and guardian/educator checks.
-- **LVL7:** chemistry/biology exploratory lessons with scientifically separate simulation and pedagogy checks. Game physics is not a science engine.
-- **Game Studios / RELICBOUND:** mechanic and level-loop tests before committing to full production engine.
-- **Pryntor Studios / AFTERLIGHT:** layered animation boards, camera choreography and motion studies; not production-video fidelity proof.
-- **FORGE:** reusable MIT generic schema and accessible creator canvas without proprietary IP leaks.
-- **ATLAS:** evidence-backed private proof for licensing/pilots, after signoff. No invented customers or revenue.
+- [ ] Independent review of R1 exact-head GitHub tests, maintainability and code security.
+- [ ] Actual Chromium/WebKit and physical iPhone screenshot and interaction evidence. Do not treat a desktop screenshot as iPhone proof.
+- [ ] Evidence of polished character animation, named sprite ownership, masks and occlusion provenance, not just a background image.
+- [ ] Reference vs actual render captures and animation at minimum/maximum poses, independent human visual review.
+- [ ] Studio-quality motion/audio; original or properly licensed tracks and voice rights, no autoplay.
+- [ ] Level reachability and no unwinnable scene edits. Movement and puzzle usability observed with consenting adult/parent-mediated testers.
+- [ ] Approved ZOWIBO brand/child safety/IP, educator content and founder release review, no self-merge.
 
-## 100x quality gates, not a 100x result claim
-
-1. Image intake: immutable reference, hash, original dimensions, license, perceptual comparisons and authorized artwork.
-2. Independent object ownership: segmentation/mattes, pivots, layering, original-pixel protection and explicitly disclosed inferred occlusion.
-3. Meaningful gameplay: mobile feel, jump reachability, moving threats, checkpoints, state machines, sound, user-friendly reset, optional recording.
-4. Directed storytelling: authored characters and dialog, learning objectives, safe achievements and fair play.
-5. Evidence-driven iteration: deterministic replay, Chromium/WebKit canvas comparisons, independent reviewer, accessibility and low-end frame budgets, child privacy.
-6. Productization: ZOWIBO private IP pilot, API/scene format, opt-in generic examples and licensing only after approval.
-
-## Blocking gates now
-
-- No independently verified browser rendering or mobile-device QA.
-- No AI segmentation, occlusion completion, sprite animation, visual reference-match or full import/reimport round trip.
-- No signoff on child safety, brand rights, license review, accessibility or commercial validation.
-- No production deployment, paid service, auto-merge or customer claims.
-
-## Upstream inspiration
-
-The public img2threejs/pixi2d repository documents an editable reference-image reconstruction workflow. Its README says it is not automatic segmentation or inpainting. We drew on its separation/provenance principles without copying source or visuals. Any future direct reuse requires license review.
-
-Governance: R0 unapproved spend, no secrets or private artwork in public FORGE, independent QA before merge.
+**Cost:** R0 unapproved expenditure. **Status:** private candidate. **Commercial revenue:** not evidenced.
