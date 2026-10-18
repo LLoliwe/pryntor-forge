@@ -38,7 +38,7 @@ export function inspectAdapter(input) {
   for (const [name,pattern] of [
     ['byte cap',/Buffer\.byteLength\(/],
     ['batch cap',/batchPages/],
-    ['explicit HTTPS source',/parsed\.protocol\s*!==\s*['"]https:['"]/],
+    ['explicit HTTPS source',/(?:u|parsed)\.protocol\s*!==\s*['"]https:['"]/],
     ['bounded native batch',/loadAll\(/],
   ]) if (!pattern.test(input)) errors.push('missing '+name);
   for (const pattern of [/\bfetch\s*\(/,/\bexecSync\s*\(/,/\bspawn\s*\(/,/\bhttps?\.request\s*\(/])
