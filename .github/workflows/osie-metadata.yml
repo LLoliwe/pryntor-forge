@@ -86,6 +86,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Worldwide public metadata probe, never download/execute candidates
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python3 tools/osie_radar.py --live --limit 3 --query "image" --query "robotics" --sources "github,huggingface,gitee,modelscope,gitflic" > "${RUNNER_TEMP}/osie-radar.json"
           python3 -c 'import json,sys; p=json.load(open(sys.argv[1])); print("CANDIDATES",len(p["candidates"])); print("PROVIDER_HEALTH",json.dumps(p["provider_health"],ensure_ascii=False)); print("MODEL_EXECUTION",p["attestation"])' "${RUNNER_TEMP}/osie-radar.json"
