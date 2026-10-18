@@ -4,9 +4,29 @@
   "private": true,
   "description": "An open-source, local-first spatial prototyping playground for rooms and physical parts",
   "type": "module",
-  "engines": {"node": ">=20"},
-  "bin": {"pryntor-forge": "./bin/forge.mjs"},
-  "scripts": {"start": "node src/server.mjs", "test": "node --test", "check": "node --check src/core.mjs && node --check src/server.mjs && node --check bin/forge.mjs && node --check public/app.js"},
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "pryntor-forge": "./bin/forge.mjs"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test": "node --test",
+    "check": "node --check src/core.mjs && node --check src/server.mjs && node --check bin/forge.mjs && node --check public/app.js && node --check playwright.config.mjs && node --check tests/e2e/forge.spec.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:chromium": "playwright test --project=desktop-chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
+  },
   "license": "MIT",
-  "files": ["src", "bin", "public", "examples", "README.md", "LICENSE"]
+  "files": [
+    "src",
+    "bin",
+    "public",
+    "examples",
+    "README.md",
+    "LICENSE"
+  ]
 }
