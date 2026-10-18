@@ -1,5 +1,7 @@
 # Pryntor FORGE
 
+**Gallery Edition v0.4 is under review**, with a redesigned spatial canvas, scene shortcuts, 3D/plan view, labels and touch controls. The v0.3 spatial engine is unchanged. [UX specification](docs/GALLERY_EDITION.md).
+
 **Spaces meet things. An open-source, local-first scene playground for makers, robotics builders and spatial creators.**
 
 > **Alpha / working vertical slice.** FORGE is not yet an AI CAD generator, professional CAD solver, physics simulator, or Pascal importer. The first release proves a common *scene contract*, real-time editable preview, deterministic text grammar, and safe source export.
@@ -92,4 +94,4 @@ npm run check && npm test
 - `synthesizeLayout`: bounded finite-grid backtracking, quarter-turn candidate orientations and spacing rules. Explicit `satisfiable`, `unsatisfiable` (only in the discretized domain) and `unknown` (search budget exhausted) states.
 - `clearanceEnvelope`: sampled clearance sensitivity, never represented as an exact physical robustness bound.
 
-The browser now has a local **Research Engine** inspector: adjust start/goal positions and an envelope proxy, compute a route, draw it over the scene and export the evidence. The interface has no claim of robot navigation safety, architectural egress approval, continuous motion, or engineering certification. Start from the five free venture blueprints. The test suite includes a separate analytic collision oracle across 250 seeded test cases and explicit finite-domain UNSAT-versus-UNKNOWN checks. See [Research Method and Limits](docs/RESEARCH_ENGINE.md) for explicit assumptions, the threat model, evidence gates and failure tests.
+The browser now has a local **Research Engine** inspector: adjust start/goal positions and an envelope proxy, compute a route, draw it over the scene and export the evidence. The interface has no claim of robot navigation safety, architectural egress approval, continuous motion, or engineering certification. Start from the five free venture blueprints. See [Research Method and Limits](docs/RESEARCH_ENGINE.md) for explicit assumptions, the threat model, evidence gates and failure tests.
