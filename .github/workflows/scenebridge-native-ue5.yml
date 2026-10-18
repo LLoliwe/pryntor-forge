@@ -1,0 +1,50 @@
+name: SceneBridge native UE5 cloud verification (manual)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-unreal:
+    # Only runs when a separately authorised UE5 cloud worker is registered.
+    # GitHub-hosted standard runners do not contain Unreal Engine.
+    runs-on: [self-hosted, linux, x64, unreal-engine-5]
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Confirm dependencies without provisioning
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v blender
+          command -v python3
+          : "${UE5_EDITOR_CMD:?Set UE5_EDITOR_CMD on the authorised worker}"
+          test -x "$UE5_EDITOR_CMD"
+      - name: Generate original synthetic Blender fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/scenebridge-source"
+          blender --background --factory-startup --python-exit-code 19 \
+            --python scenebridge/ci_blender_smoke.py -- \
+            --out "$RUNNER_TEMP/scenebridge-source"
+      - name: Validate and import into isolated Unreal QA project
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scenebridge/cloud_ue5_runner.sh \
+            "$RUNNER_TEMP/scenebridge-source/manifest.json" \
+            "$RUNNER_TEMP/scenebridge-native" \
+            "$UE5_EDITOR_CMD"
+      - name: Capture sanitized synthetic-test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scenebridge-native-ue5-qa
+          path: |
+            ${{ runner.temp }}/scenebridge-native/cloud-validation.json
+            ${{ runner.temp }}/scenebridge-native/unreal-import-report.json
+            ${{ runner.temp }}/scenebridge-native/unreal-editor.log
+          if-no-files-found: warn
+          retention-days: 7

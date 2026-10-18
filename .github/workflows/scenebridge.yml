@@ -1,0 +1,46 @@
+name: SceneBridge offline checks
+on:
+  push:
+    paths:
+      - 'scenebridge/**'
+      - 'tests/test_scenebridge.py'
+      - '.github/workflows/scenebridge.yml'
+  pull_request:
+    paths:
+      - 'scenebridge/**'
+      - 'tests/test_scenebridge.py'
+      - '.github/workflows/scenebridge.yml'
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m unittest discover -s tests -p 'test_scenebridge.py' -v
+      - run: python -m compileall -q scenebridge
+      - name: Validate cloud UE5 runner shell syntax
+        run: bash -n scenebridge/cloud_ue5_runner.sh
+  blender-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install distro Blender and ABI-matched system NumPy
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender python3-numpy
+      - name: Export original procedural office with Blender
+        run: |
+          blender --background --factory-startup --python-exit-code 19 --python-expr "import sys,numpy; print('Blender Python:', sys.version, 'NumPy:',numpy.__version__)"
+          blender --background --factory-startup --python-exit-code 19 --python scenebridge/ci_blender_smoke.py -- --out "$RUNNER_TEMP/scenebridge-office"
+      - name: Verify exported real FBX and manifest through offline planner
+        run: |
+          python -m scenebridge validate "$RUNNER_TEMP/scenebridge-office/manifest.json"
+          python -m scenebridge plan "$RUNNER_TEMP/scenebridge-office/manifest.json" --out "$RUNNER_TEMP/scenebridge-plan"
+          python -c "import json,os,pathlib; p=pathlib.Path(os.environ['RUNNER_TEMP']) / 'scenebridge-office' / 'manifest.json'; x=json.loads(p.read_text()); assert len(x['materials'])==4; assert (p.parent / x['files'][0]['path']).stat().st_size>1000"
