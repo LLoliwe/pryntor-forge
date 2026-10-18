@@ -22,6 +22,8 @@ jobs:
       - name: Discover global candidate metadata, no code execution, no weights, no GPU
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+          GITFLIC_TOKEN: ${{ secrets.GITFLIC_TOKEN }}
         run: |
           python3 tools/osie_radar.py --live --limit 5 --min-healthy-sources 3 \
             --query "image generation" \
