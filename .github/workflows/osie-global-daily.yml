@@ -23,7 +23,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          python3 tools/osie_radar.py --live --limit 5 \
+          python3 tools/osie_radar.py --live --limit 5 --min-healthy-sources 3 \
             --query "image generation" \
             --query "game engine" \
             --query "robotics" \
@@ -32,6 +32,7 @@ jobs:
             > osie-global-radar.json
           python3 -c 'import json; d=json.load(open("osie-global-radar.json")); print("Discovered unverified candidates:",len(d["candidates"])); print("Provider availability:",[(x["source"], x["state"]) for x in d["provider_health"]]); print("No candidate installed:",d["attestation"])'
       - name: Short-retention evidence, no automatic publications
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: osie-radar-daily-public-metadata
