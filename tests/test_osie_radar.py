@@ -91,6 +91,29 @@ class RadarTests(unittest.TestCase):
         self.assertIn("gitverse", report["manual_platforms"])
         self.assertEqual(report["coverage"]["unavailable"], 1)
 
+    def test_distinct_productive_provider_count_not_query_count(self):
+        def fake(url, headers):
+            if "api.github.com" in url:
+                return {"items": [{"full_name": "team/repo"}]}
+            return []
+        report = radar.discover(["image", "voice"], ["github", "gitflic"], 2,
+                                fetch=fake, env={})
+        self.assertEqual(report["coverage"]["healthy_source_count"], 1)
+        self.assertEqual(report["coverage"]["healthy_sources"], ["github"])
+
+    def test_live_health_threshold_can_fail_closed_without_fetching_models(self):
+        from unittest.mock import patch
+        import contextlib
+        import io
+        report = radar.discover(["image"], ["github"], 2,
+                                fetch=lambda url, headers: {"items": []}, env={})
+        self.assertEqual(report["coverage"]["healthy_source_count"], 0)
+        with patch.object(radar, "discover", return_value=report):
+            with contextlib.redirect_stdout(io.StringIO()):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    self.assertEqual(radar.main(["--live", "--sources", "github",
+                                                 "--min-healthy-sources", "1"]), 3)
+
     def test_bad_slug_cannot_inject_url(self):
         rows = radar.records("github", {"items": [{"full_name": "../bad"}]}, 1)
         self.assertEqual(rows, [])
