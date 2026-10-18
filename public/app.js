@@ -1,6 +1,8 @@
 import {fromPrompt, components, validateScene, addObject, removeObject, cadScriptFor, pascalHandoff, examplePrompt, templates, auditScene, rotateObject, moveObject, footprint} from '/core.mjs';
+import {planRoute} from '/research.mjs';
 const $=id=>document.getElementById(id);
 const canvas=$('viewport'),ctx=canvas.getContext('2d');
+let routeResult=null,routeSceneKey=null,routeRequest=null;
 let scene=fromPrompt(examplePrompt), selected=null, yaw=-0.73,zoom=1.0,drag=false,moved=false,lastX=0;
 const shortType=t=>t[0].toUpperCase()+t.slice(1);
 const numeric=n=>n.toFixed(1);
@@ -37,11 +39,20 @@ function draw(){
  for(let x=-w/2;x<=w/2+.01;x+=1)line(project(x,-d/2,0),project(x,-d/2,scene.room.height),'#acc5ab19',.65);
  const sorted=[...scene.objects].sort((a,b)=>{const za=a.x*Math.sin(yaw)+a.y*Math.cos(yaw);const zb=b.x*Math.sin(yaw)+b.y*Math.cos(yaw);return za-zb;});
  for(const o of sorted){const c=components[o.type];boxDraw(o.x,o.y,footprint(o).width,footprint(o).depth,c.size[2],c.color,o.id);}
+ if(routeResult?.status==='clear' && routeSceneKey===JSON.stringify(scene)){
+  const pts=routeResult.waypoints.map(p=>project(p.x,p.y,0.06));
+  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#ffca71';ctx.lineWidth=5;
+  ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.stroke();
+  ctx.strokeStyle='#fff1c4';ctx.lineWidth=1.5;ctx.stroke();
+  for(const [i,p] of pts.entries())if(i===0||i===pts.length-1){ctx.beginPath();ctx.arc(p[0],p[1],6,0,Math.PI*2);ctx.fillStyle=i===0?'#76e6b1':'#ffca71';ctx.fill();}
+  ctx.restore();
+ }
  for(const p of floor){ctx.fillStyle='#c5f37c';ctx.fillRect(p[0]-2,p[1]-2,4,4);}
  line(project(-w/2,d/2,0),project(-w/2,d/2,-.4),'#c8ee79');
  ctx.fillStyle='#9dbcaa';ctx.font='11px ui-monospace,monospace';ctx.textAlign='center';let pos=project(0,d/2,-.5);ctx.fillText(numeric(w)+' M',pos[0],pos[1]);
 }
 function update(){
+ if(routeResult && routeSceneKey!==JSON.stringify(scene)){routeResult=null;routeRequest=null;$('route-result').textContent='Scene changed. Run the planner again.';$('download-route').disabled=true;}
  $('scene-title').textContent=scene.name.toUpperCase();
  $('area').textContent=(scene.room.width*scene.room.depth).toFixed(1)+' m²';
  $('count').textContent=String(scene.objects.length).padStart(2,'0');
@@ -69,6 +80,17 @@ $('rotate').addEventListener('click',()=>{if(!selected)return;try{scene=rotateOb
 for(const [control,dx,dy] of [['move-left',-.25,0],['move-right',.25,0],['move-up',0,-.25],['move-down',0,.25]])$(control).addEventListener('click',()=>{if(!selected)return;try{scene=moveObject(scene,selected.id,selected.x+dx,selected.y+dy);update();notice('Move validated.')}catch(err){notice(err.message);}});
 $('import-json').addEventListener('change',async(e)=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>100000)throw new Error('JSON exceeds 100 KB limit');const candidate=validateScene(JSON.parse(await file.text()));scene=candidate;selected=null;$('blueprints').value='';update();notice(`Imported and validated ${scene.objects.length} envelopes.`);}catch(err){notice(`Import rejected: ${err.message}`);}finally{e.target.value='';}});
 $('export-audit').addEventListener('click',()=>{download('pryntor-forge-spatial-audit.json',JSON.stringify(auditScene(scene),null,2));notice('Preflight exported. Only 2D axis-aligned envelope overlap checked.');});
+$('run-route').addEventListener('click',()=>{
+ try{
+  const number=id=>{const input=$(id);if(!input.value.trim())throw new Error(`${id} needs a number`);const v=Number(input.value);if(!Number.isFinite(v))throw new Error(`${id} must be finite`);return v;};
+  routeRequest={scene:validateScene(scene),start:{x:number('route-start-x'),y:number('route-start-y')},goal:{x:number('route-goal-x'),y:number('route-goal-y')},options:{agentType:$('route-agent').value,clearanceM:number('route-clearance')}};
+  routeResult=planRoute(routeRequest.scene,routeRequest.start,routeRequest.goal,routeRequest.options);
+  routeSceneKey=JSON.stringify(scene);
+  $('route-result').textContent=routeResult.status==='clear'?`CLEAR ON 2D MODEL · ${routeResult.lengthM.toFixed(3)} m · ${routeResult.visitedNodes ?? 0} graph nodes visited. Not robot-safe.`:`${routeResult.status.toUpperCase()} · ${routeResult.reason}`;
+  $('download-route').disabled=false;draw();
+ }catch(e){routeResult=null;routeRequest=null;$('download-route').disabled=true;$('route-result').textContent=`Rejected: ${e.message}`;draw();}
+});
+$('download-route').addEventListener('click',()=>{if(!routeResult||!routeRequest)return;download('forge-research-route-evidence.json',JSON.stringify({request:routeRequest,result:routeResult},null,2));notice('Model-specific route evidence exported. No physical safety certification.');});
 $('export-json').addEventListener('click',()=>{download('pryntor-forge-scene.json',JSON.stringify(validateScene(scene),null,2));notice('Scene JSON exported.');});
 $('export-cad').addEventListener('click',()=>{if(!selected){notice('Select a component in the scene to export its CAD envelope.');return;}download(selected.type+'-envelope.py',cadScriptFor(selected.type),'text/x-python');notice('cadgen 0.7.21 source exported. Generation requires upstream runtime.');});
 $('export-pascal').addEventListener('click',()=>{download('pascal-handoff.json',JSON.stringify(pascalHandoff(scene),null,2));notice('Handoff exported. Use an agent connected to Pascal MCP.');});

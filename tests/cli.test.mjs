@@ -26,3 +26,12 @@ test('CLI audit returns failing exit code and details on overlap',()=>{
   assert.equal(r.status,2);assert.equal(JSON.parse(r.stdout).status,'issues');
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
+
+test('research CLI returns a verified route, finite lattice certificate and explicit invalid exit',()=>{
+ const cwd=new URL('../',import.meta.url).pathname;
+ const route=spawnSync(process.execPath,['bin/forge.mjs','route','examples/research-route.json'],{cwd,encoding:'utf8'});
+ assert.equal(route.status,0,route.stderr);
+ const result=JSON.parse(route.stdout);assert.equal(result.status,'clear');assert.ok(result.lengthM>7);
+ const layout=spawnSync(process.execPath,['bin/forge.mjs','synthesize','examples/research-layout.json'],{cwd,encoding:'utf8'});
+ assert.equal(layout.status,0,layout.stderr);assert.equal(JSON.parse(layout.stdout).status,'satisfiable');
+});

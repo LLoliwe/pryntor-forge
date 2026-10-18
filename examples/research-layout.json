@@ -1,0 +1,15 @@
+{
+  "name": "Open research cell",
+  "room": {"width": 6, "depth": 5, "height": 3.1},
+  "stepM": 0.5,
+  "clearanceM": 0.2,
+  "nodeLimit": 30000,
+  "allowRotation": true,
+  "objects": [
+    {"id": "bench-1", "type": "workbench"},
+    {"id": "bench-2", "type": "workbench"},
+    {"id": "robot-1", "type": "robot"},
+    {"id": "tank-1", "type": "tank"},
+    {"id": "shelf-1", "type": "shelf"}
+  ]
+}
