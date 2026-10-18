@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "sample-interaction-lab",
+    "name": "Sample Interaction Lab",
+    "platform": "game",
+    "owner": "UNASSIGNED",
+    "childDirected": false
+  },
+  "scope": {
+    "aim": "Original offline mini experience, no third-party brand assets",
+    "routes": [
+      "splash",
+      "play",
+      "results"
+    ],
+    "journeys": [
+      {
+        "id": "start-to-play",
+        "steps": [
+          "Tap Play from splash",
+          "Playable scene appears",
+          "Touch input changes score"
+        ]
+      },
+      {
+        "id": "restart",
+        "steps": [
+          "Finish a run",
+          "Tap Restart",
+          "Score and player state reset"
+        ]
+      }
+    ]
+  },
+  "references": [],
+  "policy": {
+    "sourceRightsApproved": false,
+    "brandAssetsOwned": false,
+    "privacyApproved": false,
+    "securityApproved": false,
+    "independentReviewer": "",
+    "releaseApproved": false,
+    "unapprovedSpendZAR": 0,
+    "allowAutomatedDownloads": false,
+    "allowExternalAccounts": false,
+    "copyThirdPartyAssets": false
+  }
+}
