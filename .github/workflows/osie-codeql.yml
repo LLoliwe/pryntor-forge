@@ -1,0 +1,49 @@
+# First-party CodeQL security analysis, separate from paid AI / agentic autofix.
+# R0: public FORGE repository only. Does not enable GitHub AI Scan or paid credit usage.
+name: OSIE CodeQL Adversarial Static Analysis
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'tools/**'
+      - 'tests/**'
+      - 'bin/**'
+      - 'public/**'
+      - '.github/workflows/**'
+      - '.coderabbit.yaml'
+      - '.gemini/**'
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+concurrency:
+  group: osie-codeql-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  codeql-security:
+    if: github.repository == 'LLoliwe/pryntor-forge'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, actions]
+    steps:
+      - name: Checkout reviewed source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Initialize GitHub CodeQL ${{ matrix.language }}
+        uses: github/codeql-action/init@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4 pinned
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          queries: security-extended
+      - name: Analyse source and publish security alerts
+        uses: github/codeql-action/analyze@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4 pinned
+        with:
+          category: /language:${{ matrix.language }}
