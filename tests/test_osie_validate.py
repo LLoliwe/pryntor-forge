@@ -69,6 +69,16 @@ class AcceptanceTests(unittest.TestCase):
         record["estimated_cash_cost_zar"] = 25
         self.assertTrue(any("spend" in e for e in mod.validate_candidate(record)))
 
+    def test_approved_cannot_ignore_known_high_risk_source_signals(self):
+        record = self.approved()
+        record["unresolved_high_risk_count"] = 2
+        self.assertTrue(any("high-risk" in e for e in mod.validate_candidate(record)))
+
+    def test_approved_requires_explicit_high_risk_reconciliation(self):
+        record = self.approved()
+        del record["unresolved_high_risk_count"]
+        self.assertTrue(any("high-risk" in e for e in mod.validate_candidate(record)))
+
     def test_independently_reviewed_metadata_can_pass(self):
         self.assertEqual(mod.validate_candidate(self.approved()), [])
 
@@ -98,6 +108,7 @@ class AcceptanceTests(unittest.TestCase):
         record.update({
             "status": "approved",
             "revision": "a" * 40,
+            "unresolved_high_risk_count": 0,
             "license_reviewed": True,
             "data_rights_reviewed": True,
             "security_reviewed": True,
