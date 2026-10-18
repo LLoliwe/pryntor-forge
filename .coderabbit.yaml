@@ -1,0 +1,21 @@
+# R0 code-review guidance for the existing Pryntor FORGE public repository.
+# This does not install or activate the CodeRabbit GitHub App.
+# Docs: https://docs.coderabbit.ai/configuration/path-instructions
+language: en-US
+early_access: false
+reviews:
+  profile: assertive
+  request_changes_workflow: false
+  auto_review:
+    enabled: true
+    drafts: false
+  path_instructions:
+    - path: "tools/rusteerio_*.mjs"
+      instructions: |
+        Correctness and regression QA lane. Demand a reproducible test or exact failure trace for each actionable finding. Check malformed or untrusted HTML, large input limits, non-public links, Unicode handling, batch ordering, errors, native load versus loadAll API drift, and unsafe implicit fetching. Validate expected output against Cheerio where appropriate. Treat source_url as caller-provided attribution, not independent verification. Do not make or recommend paid API calls, private data ingestion, silent dependency upgrades, or auto-merges.
+    - path: "tests/rusteerio_*.test.mjs"
+      instructions: |
+        Find false-green or skipped tests, malformed input cases, fixture bias, missing negative assertions, performance comparison confounders, and requirements unsupported by evidence. Native-installed tests must show zero skips. Benchmark claims apply only to reproducible fixtures.
+    - path: ".github/workflows/**"
+      instructions: |
+        Security and supply-chain QA lane. Review least-privilege token permissions, untrusted fork pull requests, exact pinned action SHAs, remote package and native binary provenance, unexpected external calls, secret leaks, runner spending, and write permissions. Flag use of pull_request_target or untrusted interpolation. Never treat green CI as independent signoff.
