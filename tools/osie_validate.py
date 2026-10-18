@@ -19,6 +19,11 @@ REQUIRED = (
 STATUSES = {"intake", "screening", "sandbox", "independent-review",
             "approved", "rejected", "on-hold"}
 KINDS = {"repository", "model", "dataset", "space", "paper", "tool"}
+REVIEW_EVIDENCE_FIELDS = (
+    "license", "data_rights", "security", "cost", "rollback", "independent_signoff",
+)
+# The offline gate only checks evidence references and metadata consistency.
+# It cannot authenticate signatures, reviewer identity or actual rights clearance.
 
 
 def is_https_url(value: object) -> bool:
@@ -65,8 +70,18 @@ def validate_candidate(record: object) -> list[str]:
         if not isinstance(rev, str) or re.fullmatch(r"[0-9a-fA-F]{40}", rev) is None:
             errors.append("approved candidate requires pinned 40-character revision SHA")
         reviewer = record["independent_reviewer"]
-        if not isinstance(reviewer, str) or not reviewer.strip() or reviewer == record["author"]:
+        author = record["author"]
+        if (not isinstance(reviewer, str) or not reviewer.strip()
+                or not isinstance(author, str)
+                or reviewer.strip().casefold() == author.strip().casefold()):
             errors.append("approved candidate requires reviewer independent of author")
+        reviews = record.get("review_evidence")
+        if not isinstance(reviews, dict):
+            errors.append("approved candidate requires itemized review_evidence")
+        else:
+            for field in REVIEW_EVIDENCE_FIELDS:
+                if not is_https_url(reviews.get(field)):
+                    errors.append(f"approved candidate requires HTTPS {field} review evidence")
         evidence = record["benchmark_evidence"]
         if not isinstance(evidence, list) or not evidence or not all(is_https_url(x) for x in evidence):
             errors.append("approved candidate requires HTTPS benchmark evidence")
@@ -94,7 +109,8 @@ def main() -> int:
         else:
             status = record["status"]
             print(f"PASS {path}: valid manifest, status={status}; "
-                  + ("review gates marked approved" if status == "approved"
+                  + ("approval fields and evidence URLs present; human validity UNVERIFIED"
+                     if status == "approved"
                      else "NOT APPROVED; review gates still required"))
     return 1 if failures else 0
 
