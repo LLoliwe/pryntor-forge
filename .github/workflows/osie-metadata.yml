@@ -1,18 +1,19 @@
-name: OSIE metadata gate
+name: OSIE global intake and isolated source staging
 on:
   pull_request:
     paths:
       - "docs/osie/**"
-      - "tools/osie_validate.py"
-      - "tests/test_osie_validate.py"
+      - "tools/osie_*.py"
+      - "tests/test_osie_*.py"
       - ".github/workflows/osie-metadata.yml"
   push:
     branches: [main]
     paths:
       - "docs/osie/**"
-      - "tools/osie_validate.py"
-      - "tests/test_osie_validate.py"
+      - "tools/osie_*.py"
+      - "tests/test_osie_*.py"
       - ".github/workflows/osie-metadata.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,11 +21,33 @@ permissions:
 jobs:
   verify-intake:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 6
     steps:
-      - name: Check out exact commit
+      - name: Check out pinned action
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - name: Python offline regression checks
-        run: python3 -m unittest discover -s tests -p test_osie_validate.py -v
-      - name: Validate candidate manifests
+      - name: Offline gate regressions for registry, global radar and source-stage
+        run: python3 -m unittest discover -s tests -p 'test_osie_*.py' -v
+      - name: Validate actual candidate manifests
         run: python3 tools/osie_validate.py docs/osie/registry/*.json
+      - name: Prove global radar does not make requests by default
+        run: python3 tools/osie_radar.py
+      - name: Prove snapshot utility does not download by default
+        run: python3 tools/osie_stage.py --repository OpenMOSS/MOSS-Image --revision c1355e6b1986dfe8fba3c0455783a05899212342 --destination "${RUNNER_TEMP}/osie-moss"
+
+  stage-source-only:
+    needs: verify-intake
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Stage immutable MOSS source in ephemeral scratch (NO model weights or inference)
+        run: |
+          python3 tools/osie_stage.py \
+            --repository OpenMOSS/MOSS-Image \
+            --revision c1355e6b1986dfe8fba3c0455783a05899212342 \
+            --destination "${RUNNER_TEMP}/osie-moss" \
+            --stage
+      - name: Demonstrate staged model is not activated
+        run: |
+          test -f "${RUNNER_TEMP}/osie-moss/README.md"
+          echo "SOURCE_ONLY: no pip install, model weights or inference; scratch discarded at job end"
