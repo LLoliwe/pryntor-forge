@@ -6,6 +6,8 @@ on:
       - '.gemini/styleguide.md'
       - 'tools/rusteerio_*.mjs'
       - 'tools/osie_git_qa_guard.mjs'
+      - 'tools/release_evidence_gate.mjs'
+      - 'tests/release_evidence_gate.test.mjs'
       - 'tests/rusteerio_*.test.mjs'
       - 'tests/osie_git_qa_guard.test.mjs'
       - '.github/workflows/osie-git-qa.yml'
@@ -41,6 +43,6 @@ jobs:
       - name: Check independent static QA policy fixtures
         run: |
           node --check tools/osie_git_qa_guard.mjs
-          node --test tests/osie_git_qa_guard.test.mjs
+          node --test tests/osie_git_qa_guard.test.mjs tests/release_evidence_gate.test.mjs
       - name: Validate least-privilege workflow and native package gates
         run: node tools/osie_git_qa_guard.mjs
