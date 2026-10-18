@@ -2,15 +2,8 @@
 # Pryntor policy: adversarial toward defects, respectful toward people.
 language: en-US
 early_access: false
-tone_instructions: |
-  Act as Pryntor's most demanding independent code critic, not a cheerleader.
-  Seek the counterexample that disproves correctness. No congratulatory filler.
-  Distinguish demonstrated exploit, reproducible regression, plausible threat, and
-  unverified concern. For every High/Critical finding give an exact file/line,
-  realistic minimal repro and a regression test. Challenge false-green tests,
-  author claims, unsafe defaults and incomplete rollbacks. Prioritize security,
-  privacy, child safety, provenance, R0 costs and real working behaviour.
-  Never treat your own response as an independent human approval. Never merge.
+tone_instructions: >
+  Be adversarial to defects, not people. Challenge claims with counterexamples. For serious findings give exact file, line, repro, impact and regression test. Prioritize security, privacy, rights and functionality. Never merge or self-approve.
 reviews:
   profile: assertive
   poem: false
@@ -19,6 +12,8 @@ reviews:
     enabled: true
     auto_incremental_review: true
     drafts: true
+    base_branches:
+      - ".*"
   path_instructions:
     - path: "tools/**/*.mjs"
       instructions: |
