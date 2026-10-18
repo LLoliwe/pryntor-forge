@@ -1,64 +1,85 @@
-import {WIDTH,HEIGHT,newGame,step,placeObject,validateWorld} from '/worldweaver-core.mjs';
-const $=id=>document.getElementById(id),canvas=$('world'),ctx=canvas.getContext('2d');
-let game=newGame(),mode='play',tool='platform',reference=null,last=0,lag=0;
-let keys={left:false,right:false,jump:false};
-const rect=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,h);};
-function label(t,x,y,size=20,color='#fff'){ctx.font='800 '+size+'px system-ui';ctx.fillStyle=color;ctx.fillText(t,x,y);}
-function ellipse(x,y,rx,ry,color){ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();}
-function drawBackground(t){
- let grad=ctx.createLinearGradient(0,0,0,HEIGHT);grad.addColorStop(0,'#140d34');grad.addColorStop(.55,'#654384');grad.addColorStop(1,'#ef8dba');rect(0,0,WIDTH,HEIGHT,grad);
- const shift=game.camera;
- for(let i=0;i<48;i++){const x=(i*151-shift*.08+WIDTH*8)%(WIDTH+200),y=25+(i*53)%215;rect(x,y,3,3,i%4===0?'#d7fbae':'#d5b8f6');}
- let glow=ctx.createRadialGradient(755,118,1,755,118,105);glow.addColorStop(0,'#ffeab6');glow.addColorStop(.5,'#f8b4e188');glow.addColorStop(1,'#f8b4e100');rect(640,5,235,235,glow);ellipse(755,118,41,41,'#ffe7c4');
- for(let k=0;k<3;k++){ctx.beginPath();ctx.moveTo(0,HEIGHT);for(let x=0;x<=WIDTH+24;x+=24){const h=330+k*55+32*Math.sin((x+shift*(.06+k*.09))*0.009+k*2);ctx.lineTo(x,h);}ctx.lineTo(WIDTH,HEIGHT);ctx.closePath();ctx.fillStyle=['#332956','#343057','#242146'][k];ctx.fill();}
- if(reference){ctx.save();ctx.globalAlpha=.55;const s=Math.max(WIDTH/reference.width,HEIGHT/reference.height),w=reference.width*s,h=reference.height*s;ctx.drawImage(reference,(WIDTH-w)/2,(HEIGHT-h)/2,w,h);ctx.restore();}
+import {WIDTH,HEIGHT,newGame,step,seededWorld,placeObject,validateWorld,circuitState,circuitLit,changeCircuit,gameSummary} from '/worldweaver-core.mjs';
+const $=id=>document.getElementById(id), canvas=$('world'),ctx=canvas.getContext('2d');
+let game=newGame(), mode='play', tool='platform', image=null, imageFile=null, last=0, accumulator=0, keys={left:false,right:false,jump:false},paused=false,light=circuitState(),recording=[],motionReduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const make=(x,y,w,h)=>ctx.fillRect(x,y,w,h);
+function text(str,x,y,size=24,fill='#fff') {ctx.font=`800 ${size}px system-ui`;ctx.fillStyle=fill;ctx.fillText(str,x,y);}
+function round(x,y,w,h,r,fill){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();}
+const terrain=(x,h,color)=>{ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(0,HEIGHT);ctx.lineTo(0,h);for(let i=0;i<12;i++)ctx.lineTo(i*105,h-40*Math.sin((i*93+x)*.012)-20*Math.sin((i*49+x)*.023));ctx.lineTo(WIDTH,HEIGHT);ctx.fill();};
+function sky(time,camera){let grad=ctx.createLinearGradient(0,0,0,HEIGHT);grad.addColorStop(0,'#120c32');grad.addColorStop(.62,'#573c86');grad.addColorStop(1,'#fa8ab1');ctx.fillStyle=grad;make(0,0,WIDTH,HEIGHT);
+ ctx.save();ctx.translate(-camera*.08,0);
+ for(let i=0;i<32;i++){const x=((i*139+45)%1100)+camera*.08;const y=30+(i*67)%200;ctx.fillStyle=i%3?'#e8ccff':'#d6ff98';ctx.globalAlpha=.4+.3*Math.sin(time*1.2+i);make(x,y,3,3);}ctx.restore();
+ let moon=ctx.createRadialGradient(735,120,1,735,120,120);moon.addColorStop(0,'#ffefc4');moon.addColorStop(.38,'#ecbaff80');moon.addColorStop(1,'#f1b4ff00');ctx.fillStyle=moon;ctx.fillRect(610,0,250,250);
+ ctx.fillStyle='#ffe4b7';ctx.beginPath();ctx.arc(735,120,42,0,Math.PI*2);ctx.fill();
+ terrain(camera*.03,385,'#302950');terrain(camera*.08+140,425,'#373154');terrain(camera*.18+260,455,'#29254b');}
+function drawPlatform(o){const x=o.x-game.camera; if(x>WIDTH+10||x+o.w < -10)return;
+ round(x,o.y,o.w,o.h,9,'#1b203d');round(x,o.y,o.w,13,6,'#b4f277');ctx.fillStyle='#5e73ad';for(let i=14;i<o.w-10;i+=34)make(x+i,o.y+21,13,5);
+ ctx.strokeStyle='#effbaa77';ctx.lineWidth=2;ctx.strokeRect(x+1,o.y+1,o.w-2,o.h-2);}
+function drawGem(o,t){if(game.collected.includes(o.id))return; const x=o.x-game.camera;if(x< -40||x>WIDTH+40)return;const y=o.y+Math.sin(t*3+o.x)*5;
+ ctx.save();ctx.translate(x,y);ctx.rotate(.2*Math.sin(t*2+o.x));ctx.shadowColor='#feeb71';ctx.shadowBlur=20;ctx.fillStyle='#ffdf61';ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(12,0);ctx.lineTo(0,16);ctx.lineTo(-12,0);ctx.closePath();ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#fff8b5';ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(0,12);ctx.lineTo(-11,0);ctx.fill();ctx.restore();}
+function drawEnemy(o,t){const x=o.x+Math.sin(t*o.speed)*o.range-game.camera;if(x< -40||x>WIDTH+40)return;ctx.save();ctx.translate(x,o.y);ctx.shadowColor='#fc71a7';ctx.shadowBlur=16;ctx.fillStyle='#f36baf';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#452248';for(let i=-1;i<=1;i++)round(i*11-3,-20,6,10,2,'#362041');round(-10,-3,7,6,3,'#210e3e');round(5,-3,7,6,3,'#210e3e');ctx.restore();}
+function drawPortal(o,t){const x=o.x-game.camera;if(x<-100||x>WIDTH+100)return;ctx.save();ctx.translate(x+12,o.y-3);ctx.shadowColor='#70fcf6';ctx.shadowBlur=28;ctx.strokeStyle='#90ffd8';ctx.lineWidth=9;ctx.beginPath();ctx.ellipse(0,0,32,63,0,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;const g=ctx.createRadialGradient(0,0,0,0,0,58);g.addColorStop(0,'#fce5ff');g.addColorStop(.35,'#a3b6ff');g.addColorStop(1,'#8660d322');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,0,29,58,0,0,Math.PI*2);ctx.fill();for(let i=0;i<6;i++){ctx.fillStyle='#d2ffff';ctx.fillRect(-10+Math.sin(t*2+i)*15,i*17-50,3,8);}ctx.restore();}
+function drawPlayer(t){const p=game.player,x=p.x-game.camera,y=p.y;ctx.save();ctx.translate(x+p.w/2,y+23);const stretch=p.grounded?1-.05*Math.min(1,Math.abs(p.vx)/285):1+.07*Math.min(1,Math.abs(p.vy)/585);ctx.scale(1/stretch,stretch);if(p.invulnerable>0&&Math.sin(t*24)>0)ctx.globalAlpha=.6;
+ ctx.shadowColor='#8493ff';ctx.shadowBlur=15;round(-18,-4,36,35,15,'#6f72e8');ctx.shadowBlur=0;
+ ctx.fillStyle='#6953b2';ctx.beginPath();ctx.arc(0,-9,24,0,Math.PI*2);ctx.fill();
+ for(let i=0;i<8;i++){const a=i*Math.PI*2/8;ctx.fillStyle=i%2?'#8270d4':'#9c8deb';ctx.beginPath();ctx.arc(Math.cos(a)*19,Math.sin(a)*18-9,10,0,Math.PI*2);ctx.fill();}
+ round(-13,-15,10,12,5,'#fff9ef');round(3,-15,10,12,5,'#fff9ef');round(-9,-12,5,7,3,'#202042');round(6,-12,5,7,3,'#202042');round(-5,0,10,4,3,'#ffd884');
+ ctx.fillStyle='#b3ff99';ctx.fillRect(-20,20,15,11);ctx.fillRect(5,20,15,11);ctx.restore();}
+function drawCheckpoint(o,t){const x=o.x-game.camera,y=o.y;if(x<-50||x>WIDTH+50)return;ctx.save();ctx.translate(x,y);ctx.strokeStyle='#d0d7ed';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-75);ctx.stroke();ctx.shadowColor='#ffec8c';ctx.shadowBlur=game.checkpoint===o.id?28:9;ctx.fillStyle=game.checkpoint===o.id?'#f9e58d':'#f2a7d0';ctx.beginPath();ctx.moveTo(0,-76);ctx.lineTo(15,-59);ctx.lineTo(0,-42);ctx.lineTo(-15,-59);ctx.closePath();ctx.fill();ctx.restore();}
+function draw(){const d=Math.min(window.devicePixelRatio||1,2); if(canvas.width!==Math.round(WIDTH*d)||canvas.height!==Math.round(HEIGHT*d)){canvas.width=Math.round(WIDTH*d);canvas.height=Math.round(HEIGHT*d);}ctx.setTransform(d,0,0,d,0,0);const t=motionReduced?0:game.time;sky(t,game.camera);
+ if(image){ctx.save();ctx.globalAlpha=.53;const iw=image.naturalWidth,ih=image.naturalHeight,scale=Math.max(WIDTH/iw,HEIGHT/ih);let sw=iw*scale,sh=ih*scale;ctx.drawImage(image,(WIDTH-sw)/2,(HEIGHT-sh)/2,sw,sh);ctx.restore();}
+ for(const o of game.world.objects.filter(o=>o.type==='platform'))drawPlatform(o);
+ for(const o of game.world.objects.filter(o=>o.type==='gem'))drawGem(o,t);
+ for(const o of game.world.objects.filter(o=>o.type==='enemy'))drawEnemy(o,t);
+ for(const o of game.world.objects.filter(o=>o.type==='checkpoint'))drawCheckpoint(o,t);
+ for(const o of game.world.objects.filter(o=>o.type==='portal'))drawPortal(o,t);
+ drawPlayer(t);
+ if(paused&&mode==='play'){round(16,16,207,49,12,'#191633b8');text('Ⅱ PAUSED',36,47,22,'#f9e6ab');}
+ if(mode==='edit'){ctx.fillStyle='#17112bba';round(18,17,610,44,13,'#17112bdc');text('EDIT WORLD  ·  CLICK TO PLACE '+tool.toUpperCase(),35,46,18,'#edffac');}
+ if(game.completed){ctx.fillStyle='#111022bd';make(0,0,WIDTH,HEIGHT);round(195,140,570,265,25,'#23173e');text('WORLD COMPLETE ✦',247,233,42,'#d8ff8f');text('You brought the Spark Trail to life.',248,285,22,'#f5def9');text('Restart to play again',340,336,20,'#c4b7ed');}
 }
-function drawWorld(){
- const t=game.time,c=game.camera;
- for(const o of game.world.objects){
-  const x=o.x-c;if(x<-230||x>WIDTH+250)continue;
-  if(o.type==='platform'){rect(x,o.y,o.w,o.h,'#1a2043');rect(x,o.y,o.w,12,'#bef78b');for(let a=14;a<o.w-9;a+=36)rect(x+a,o.y+22,14,4,'#56649b');}
-  if(o.type==='gem'&&!game.collected.includes(o.id)){const y=o.y+Math.sin(t*3+o.x)*5;ctx.save();ctx.translate(x,y);ctx.rotate(t*.4);ctx.shadowColor='#fff098';ctx.shadowBlur=20;ctx.fillStyle='#fadd72';ctx.beginPath();ctx.moveTo(0,-15);ctx.lineTo(12,0);ctx.lineTo(0,15);ctx.lineTo(-12,0);ctx.closePath();ctx.fill();ctx.restore();}
-  if(o.type==='enemy'){const ex=x+Math.sin(t*o.speed)*o.range;ctx.save();ctx.shadowColor='#ff71a9';ctx.shadowBlur=17;ellipse(ex,o.y,20,20,'#fb78af');ctx.restore();ellipse(ex-8,o.y-3,3,4,'#281332');ellipse(ex+8,o.y-3,3,4,'#281332');}
-  if(o.type==='portal'){ctx.save();ctx.shadowColor='#85fcf1';ctx.shadowBlur=28;ctx.lineWidth=9;ctx.strokeStyle='#a0ffde';ctx.beginPath();ctx.ellipse(x+10,o.y-8,32,62,0,0,Math.PI*2);ctx.stroke();ctx.restore();ellipse(x+10,o.y-8,24,50,'#9c8ceaad');}
+function metrics(){ $('score').textContent=String(game.score).padStart(4,'0');$('collected').textContent=game.collected.length+' / '+game.world.objects.filter(o=>o.type==='gem').length;$('deaths').textContent=String(game.deaths).padStart(2,'0');$('checkpoint').textContent=game.checkpoint?'LIT':'NONE';$('status').textContent=game.completed?'✨ World complete. You win!':mode==='edit'?'Tap the canvas to '+(tool==='erase'?'remove':'place')+' an object.':paused?'Paused. Resume when ready.':'Reach the portal. Collect sparks along the way.';}
+function frame(now){if(!last)last=now;const elapsed=Math.min((now-last)/1000,.12);last=now;accumulator=Math.min(accumulator+elapsed,.12);while(accumulator>=1/60){if(mode==='play'&&!paused){step(game,keys,1/60);if(recording.length<36000)recording.push({left:keys.left,right:keys.right,jump:keys.jump});}accumulator-=1/60;}draw();metrics();requestAnimationFrame(frame);}requestAnimationFrame(frame);
+$('play').onclick=()=>{paused=false;$('pause').textContent='Ⅱ Pause game';mode='play';$('mode-label').textContent='PLAY MODE';$('play').classList.add('primary');$('edit').classList.remove('primary');canvas.focus();};
+$('edit').onclick=()=>{mode='edit';$('mode-label').textContent='EDIT MODE';$('edit').classList.add('primary');$('play').classList.remove('primary');};
+$('reset').onclick=()=>{let w=game.world;game=newGame(w);recording=[];paused=false;$('pause').textContent='Ⅱ Pause game';};
+$('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'▶ Resume game':'Ⅱ Pause game';};
+for(const b of document.querySelectorAll('.tool'))b.onclick=()=>{tool=b.dataset.tool;document.querySelectorAll('.tool').forEach(a=>a.classList.toggle('active',a===b));mode='edit';$('mode-label').textContent='EDIT MODE';};
+const mapping={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'jump',KeyW:'jump',Space:'jump'};
+window.addEventListener('keydown',e=>{if(mapping[e.code]){e.preventDefault();keys[mapping[e.code]]=true;}});window.addEventListener('keyup',e=>{if(mapping[e.code])keys[mapping[e.code]]=false;});window.addEventListener('blur',()=>{keys={left:false,right:false,jump:false};paused=true;$('pause').textContent='▶ Resume game';});
+for(const b of document.querySelectorAll('[data-key]')){const key=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[key]=true;b.setPointerCapture(e.pointerId);});for(const type of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(type,()=>{keys[key]=false;});}
+canvas.addEventListener('pointerdown',e=>{if(mode!=='edit')return;const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*WIDTH+game.camera,y=(e.clientY-r.top)/r.height*HEIGHT;
+ if(tool==='erase'){let closest=null,dist=50;for(const o of game.world.objects){if(o.type==='portal'||o.id==='p0')continue;const cx=o.type==='platform'?o.x+o.w/2:o.x,cy=o.type==='platform'?o.y+o.h/2:o.y;const d=Math.hypot(cx-x,cy-y);if(d<dist){closest=o;dist=d;}}if(closest){game.world.objects=game.world.objects.filter(o=>o.id!==closest.id);game.collected=game.collected.filter(id=>id!==closest.id);}} else {try{placeObject(game,tool,x,y)}catch(err){$('status').textContent=err.message;}}});
+$('rights').onchange=()=>{if(!$('rights').checked&&image){image=null;imageFile=null;game.world.source={kind:'original-demo',referenceName:null,visualExtraction:'none',rightsConfirmed:true};$('image-info').textContent='Reference image cleared because permission was withdrawn.';}};
+$('file').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;if(!$('rights').checked){$('image-info').textContent='Check the rights box before loading artwork.';e.target.value='';return;}if(f.size>8*1024*1024 || !['image/png','image/jpeg','image/webp'].includes(f.type)){$('image-info').textContent='Only PNG, JPEG, WebP, maximum 8 MB.';return;}
+ try{const img=new Image();const url=await new Promise((ok,fail)=>{const reader=new FileReader();reader.onload=()=>ok(reader.result);reader.onerror=fail;reader.readAsDataURL(f);});await new Promise((ok,fail)=>{img.onload=ok;img.onerror=fail;img.src=url;});if(img.naturalWidth>8000||img.naturalHeight>8000)throw Error('Image dimensions too large');image=img;imageFile=f.name;game.world.source={kind:'reference',referenceName:f.name,visualExtraction:'none',rightsConfirmed:true};$('image-info').textContent='Image loaded as a backdrop only. Objects need manual placement.';}catch(err){$('image-info').textContent='Could not read this image.';}});
+$('export').onclick=()=>{try{const world=validateWorld(game.world);const blob=new Blob([JSON.stringify(world,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='pryntor-worldweaver-scene.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);$('status').textContent='Source JSON exported locally. Image pixels are not embedded.';}catch(err){$('status').textContent=err.message;}};
+
+// Three-control educational circuit truth model. Local and deliberately separate from fictional physics.
+for(const b of document.querySelectorAll('[data-circuit]'))b.addEventListener('click',()=>{
+ light=changeCircuit(light,b.dataset.circuit);
+ for(const control of document.querySelectorAll('[data-circuit]')){
+  const active=light[control.dataset.circuit];control.setAttribute('aria-pressed',String(active));
+  control.textContent=(active?'● ':'◯ ')+({battery:'Battery',wire:'Wire',switchClosed:'Switch'}[control.dataset.circuit]);
  }
- const p=game.player,x=p.x-c,y=p.y;if(p.invulnerable===0||Math.sin(t*24)<0){ctx.save();ctx.shadowBlur=13;ctx.shadowColor='#9b83ff';ellipse(x+15,y+18,22,25,'#7963bc');ctx.shadowBlur=0;for(let k=0;k<8;k++){const a=k*Math.PI/4;ellipse(x+15+18*Math.cos(a),y+15+19*Math.sin(a),9,10,k%2?'#7f69dc':'#ae93ff');}ellipse(x+8,y+16,5,7,'#fff7df');ellipse(x+22,y+16,5,7,'#fff7df');ellipse(x+8,y+17,2,3,'#191a34');ellipse(x+22,y+17,2,3,'#191a34');rect(x+4,y+38,10,5,'#bafa83');rect(x+18,y+38,10,5,'#bafa83');ctx.restore();}
-}
-function draw(){
- drawBackground(game.time);drawWorld();
- if(mode==='edit'){rect(12,12,578,47,'#1b153bdd');label('EDIT MODE   /   TAP TO PLACE '+tool.toUpperCase(),27,42,18,'#d8ff90');}
- if(game.completed){rect(0,0,WIDTH,HEIGHT,'#110f2bcb');rect(210,151,540,244,'#322354');label('WORLD COMPLETE ✦',257,235,41,'#d4ff8c');label('The Spark Trail is yours.',316,284,22);label('Restart to play again.',334,332,17,'#bfb2dd');}
-}
-function updateReadout(){
- $('score').textContent=String(game.score).padStart(4,'0');
- $('count').textContent=game.collected.length+' / '+game.world.objects.filter(o=>o.type==='gem').length;
- $('deaths').textContent=String(game.deaths).padStart(2,'0');
- $('notice').textContent=game.completed?'✨ WORLD COMPLETE':mode==='edit'?'Tap the canvas to '+(tool==='erase'?'erase':'place')+' '+tool:'Reach the portal.';
-}
-function tick(now){if(!last)last=now;lag=Math.min(lag+Math.min((now-last)/1000,.1),.12);last=now;while(lag>=1/60){if(mode==='play')step(game,keys,1/60);lag-=1/60;}draw();updateReadout();requestAnimationFrame(tick);}requestAnimationFrame(tick);
-function chooseMode(m){mode=m;$('mode').textContent=m.toUpperCase()+' MODE';canvas.focus();}
-$('play').onclick=()=>chooseMode('play');$('edit').onclick=()=>chooseMode('edit');
-$('restart').onclick=()=>{game=newGame(game.world);};
-for(const b of document.querySelectorAll('[data-tool]'))b.onclick=()=>{tool=b.dataset.tool;chooseMode('edit');document.querySelectorAll('[data-tool]').forEach(x=>x.classList.toggle('selected',x===b));};
-const map={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'jump',KeyW:'jump',Space:'jump'};
-window.addEventListener('keydown',e=>{if(map[e.code]){e.preventDefault();keys[map[e.code]]=true;}});
-window.addEventListener('keyup',e=>{if(map[e.code])keys[map[e.code]]=false;});
-window.addEventListener('blur',()=>{keys={left:false,right:false,jump:false};});
-for(const b of document.querySelectorAll('[data-key]')){const k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true;b.setPointerCapture(e.pointerId);});for(const type of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(type,()=>{keys[k]=false;});}
-canvas.addEventListener('pointerdown',e=>{
- if(mode!=='edit')return;
- const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*WIDTH/r.width+game.camera,y=(e.clientY-r.top)*HEIGHT/r.height;
- if(tool==='erase'){let choice=null,dist=48;for(const o of game.world.objects){if(o.id==='p0'||o.type==='portal')continue;const cx=o.type==='platform'?o.x+o.w/2:o.x,cy=o.type==='platform'?o.y+o.h/2:o.y;const d=Math.hypot(x-cx,y-cy);if(d<dist){choice=o;dist=d;}}if(choice){game.world.objects=game.world.objects.filter(o=>o.id!==choice.id);game.collected=game.collected.filter(id=>id!==choice.id);}}
- else{try{placeObject(game,tool,x,y);}catch(err){$('notice').textContent=err.message;}}
+ const on=circuitLit(light);$('lamp').classList.toggle('on',on);
+ $('lamp-title').textContent=on?'LIGHT ON':'LIGHT OFF';
+ $('lamp-note').textContent=on?'Circuit complete. All three parts are connected.':!light.battery?'No battery: the model has no power source.':!light.wire?'Loose wire: the circuit path is broken.':'Open switch: the circuit path is broken.';
 });
-$('rights').addEventListener('change',()=>{if(!$('rights').checked){reference=null;game.world.source={kind:'original-demo',referenceName:null,visualExtraction:'none',rightsConfirmed:true};$('imageNote').textContent='Reference cleared when permission withdrawn.';}});
-$('image').addEventListener('change',async e=>{
+$('scene-file').addEventListener('change',async e=>{
  const f=e.target.files?.[0];if(!f)return;
- if(!$('rights').checked){$('imageNote').textContent='Confirm your rights before selecting an image.';e.target.value='';return;}
- if(f.size>8*1024*1024||!['image/png','image/jpeg','image/webp'].includes(f.type)){$('imageNote').textContent='PNG, JPEG or WebP only, up to 8 MB.';return;}
- try{const src=await new Promise((ok,bad)=>{const reader=new FileReader();reader.onload=()=>ok(reader.result);reader.onerror=bad;reader.readAsDataURL(f);});
- const img=new Image();await new Promise((ok,bad)=>{img.onload=ok;img.onerror=bad;img.src=src;});if(img.naturalWidth>8000||img.naturalHeight>8000)throw Error('Too large');
- reference=img;game.world.source={kind:'reference',referenceName:f.name,visualExtraction:'none',rightsConfirmed:true};$('imageNote').textContent='Image loaded locally as a backdrop. Place gameplay objects manually.';
- }catch(err){$('imageNote').textContent='Image could not be read.';}
+ if(f.size>100000){$('status').textContent='World JSON must be smaller than 100 KB.';return;}
+ try{const content=await f.text();const safe=validateWorld(JSON.parse(content));
+  if(safe.source.kind==='reference'){
+   // A JSON export never contains its artwork, so don't claim a portable image.
+   safe.source={kind:'original-demo',referenceName:null,visualExtraction:'none',rightsConfirmed:true};
+   image=null;imageFile=null;$('image-info').textContent='Scene restored. Re-import the reference image separately if licensed.';
+  }else{image=null;imageFile=null;}
+  game=newGame(safe);recording=[];$('world-title').textContent=safe.title;mode='play';paused=false;
+  $('status').textContent='Valid, untrusted JSON safely imported. Original image not included.';
+ }catch(err){$('status').textContent='Scene rejected: '+err.message;}finally{e.target.value='';}
 });
-$('export').onclick=()=>{try{const data=JSON.stringify(validateWorld(game.world),null,2);const url=URL.createObjectURL(new Blob([data],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='pryntor-worldweaver-scene.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);$('notice').textContent='Scene JSON exported.';}catch(err){$('notice').textContent=err.message;}};
+$('proof').onclick=()=>{
+ const payload={source:'local-simulation',engine:'worldweaver/0.2',note:'Not proof of child usability or artistic acceptance.',scene:validateWorld(game.world),summary:gameSummary(game),inputs:recording};
+ const blob=new Blob([JSON.stringify(payload)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='worldweaver-local-replay-evidence.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
