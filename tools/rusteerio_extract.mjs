@@ -2,7 +2,8 @@
  * Optional local-only Rusteerio adapter for Pryntor OSIE.
  * Supplied HTML only: no fetching, crawling, telemetry, keys or paid API calls.
  */
-import { readFile, lstat } from 'node:fs/promises';
+import { open } from 'node:fs/promises';
+import { constants } from 'node:fs';
 import { isIP } from 'node:net';
 import { pathToFileURL } from 'node:url';
 
@@ -97,6 +98,35 @@ export async function extractBatch(items, {parser} = {}) {
   if (!Array.isArray(doms) || doms.length !== pages.length) throw new Error('Rusteerio returned a different document count');
   return doms.map((dom, i) => collectDocument(dom, pages[i].sourceUrl));
 }
+/**
+ * Read a local HTML file via one bounded, no-symlink file descriptor.
+ * The name may be replaced between calls; using the already opened file handle
+ * prevents a pathname race. Non-regular files are rejected before reading.
+ */
+export async function readLocalHtmlFile(path) {
+  if (!Number.isInteger(constants.O_NOFOLLOW) || constants.O_NOFOLLOW === 0)
+    throw new Error('Secure no-symlink file opening unsupported on this platform');
+  const flags = constants.O_RDONLY | constants.O_NOFOLLOW | (constants.O_NONBLOCK || 0);
+  const handle = await open(path, flags);
+  try {
+    const entry = await handle.stat();
+    if (!entry.isFile()) throw new Error('Input must be a regular HTML file');
+    if (entry.size > LIMITS.bytesPerPage) throw new RangeError('HTML exceeds 2 MiB cap');
+    // Bounded read also protects if the underlying regular file grows after fstat.
+    const buffer = Buffer.alloc(LIMITS.bytesPerPage + 1);
+    let total = 0;
+    while (total < buffer.length) {
+      const { bytesRead } = await handle.read(buffer, total, buffer.length - total, null);
+      if (bytesRead === 0) break;
+      total += bytesRead;
+    }
+    if (total > LIMITS.bytesPerPage) throw new RangeError('HTML exceeds 2 MiB cap');
+    return buffer.toString('utf8', 0, total);
+  } finally {
+    await handle.close();
+  }
+}
+
 // Explicit local-file CLI. Never follows network URLs.
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const [path, url, extra] = process.argv.slice(2);
@@ -105,9 +135,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     process.exitCode = 2;
   } else {
     try {
-      const entry = await lstat(path);
-      if (!entry.isFile() || entry.isSymbolicLink() || entry.size > LIMITS.bytesPerPage) throw new Error('Input must be a regular, non-symlink HTML file <= 2 MiB');
-      const html = await readFile(path, 'utf8');
+      const html = await readLocalHtmlFile(path);
       console.log(JSON.stringify(await extractHtml({html, sourceUrl: url}), null, 2));
     } catch (err) {
       console.error(`Rusteerio probe failed: ${err.message}`);
