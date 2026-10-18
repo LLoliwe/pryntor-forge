@@ -1,6 +1,8 @@
 import {WIDTH,HEIGHT,newGame,step,seededWorld,placeObject,validateWorld,circuitState,circuitLit,changeCircuit,gameSummary} from '/worldweaver-core.mjs';
+import {newGait,advanceGait,sampleGait} from '/locomotion-core.mjs';
 const $=id=>document.getElementById(id), canvas=$('world'),ctx=canvas.getContext('2d');
 let game=newGame(), mode='play', tool='platform', image=null, imageFile=null, last=0, accumulator=0, keys={left:false,right:false,jump:false},paused=false,light=circuitState(),recording=[],motionReduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let gait=newGait();
 const make=(x,y,w,h)=>ctx.fillRect(x,y,w,h);
 function text(str,x,y,size=24,fill='#fff') {ctx.font=`800 ${size}px system-ui`;ctx.fillStyle=fill;ctx.fillText(str,x,y);}
 function round(x,y,w,h,r,fill){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();}
@@ -18,12 +20,12 @@ function drawGem(o,t){if(game.collected.includes(o.id))return; const x=o.x-game.
  ctx.save();ctx.translate(x,y);ctx.rotate(.2*Math.sin(t*2+o.x));ctx.shadowColor='#feeb71';ctx.shadowBlur=20;ctx.fillStyle='#ffdf61';ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(12,0);ctx.lineTo(0,16);ctx.lineTo(-12,0);ctx.closePath();ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#fff8b5';ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(0,12);ctx.lineTo(-11,0);ctx.fill();ctx.restore();}
 function drawEnemy(o,t){const x=o.x+Math.sin(t*o.speed)*o.range-game.camera;if(x< -40||x>WIDTH+40)return;ctx.save();ctx.translate(x,o.y);ctx.shadowColor='#fc71a7';ctx.shadowBlur=16;ctx.fillStyle='#f36baf';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#452248';for(let i=-1;i<=1;i++)round(i*11-3,-20,6,10,2,'#362041');round(-10,-3,7,6,3,'#210e3e');round(5,-3,7,6,3,'#210e3e');ctx.restore();}
 function drawPortal(o,t){const x=o.x-game.camera;if(x<-100||x>WIDTH+100)return;ctx.save();ctx.translate(x+12,o.y-3);ctx.shadowColor='#70fcf6';ctx.shadowBlur=28;ctx.strokeStyle='#90ffd8';ctx.lineWidth=9;ctx.beginPath();ctx.ellipse(0,0,32,63,0,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;const g=ctx.createRadialGradient(0,0,0,0,0,58);g.addColorStop(0,'#fce5ff');g.addColorStop(.35,'#a3b6ff');g.addColorStop(1,'#8660d322');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,0,29,58,0,0,Math.PI*2);ctx.fill();for(let i=0;i<6;i++){ctx.fillStyle='#d2ffff';ctx.fillRect(-10+Math.sin(t*2+i)*15,i*17-50,3,8);}ctx.restore();}
-function drawPlayer(t){const p=game.player,x=p.x-game.camera,y=p.y;ctx.save();ctx.translate(x+p.w/2,y+23);const stretch=p.grounded?1-.05*Math.min(1,Math.abs(p.vx)/285):1+.07*Math.min(1,Math.abs(p.vy)/585);ctx.scale(1/stretch,stretch);if(p.invulnerable>0&&Math.sin(t*24)>0)ctx.globalAlpha=.6;
+function drawPlayer(t){const p=game.player,x=p.x-game.camera,y=p.y,pose=sampleGait(gait,p,motionReduced);ctx.save();ctx.translate(x+p.w/2,y+23-pose.bob);const stretch=p.grounded?1-.05*Math.min(1,Math.abs(p.vx)/285):1+.07*Math.min(1,Math.abs(p.vy)/585);ctx.scale(1/stretch,stretch);if(p.invulnerable>0&&Math.sin(t*24)>0)ctx.globalAlpha=.6;
  ctx.shadowColor='#8493ff';ctx.shadowBlur=15;round(-18,-4,36,35,15,'#6f72e8');ctx.shadowBlur=0;
  ctx.fillStyle='#6953b2';ctx.beginPath();ctx.arc(0,-9,24,0,Math.PI*2);ctx.fill();
  for(let i=0;i<8;i++){const a=i*Math.PI*2/8;ctx.fillStyle=i%2?'#8270d4':'#9c8deb';ctx.beginPath();ctx.arc(Math.cos(a)*19,Math.sin(a)*18-9,10,0,Math.PI*2);ctx.fill();}
  round(-13,-15,10,12,5,'#fff9ef');round(3,-15,10,12,5,'#fff9ef');round(-9,-12,5,7,3,'#202042');round(6,-12,5,7,3,'#202042');round(-5,0,10,4,3,'#ffd884');
- ctx.fillStyle='#b3ff99';ctx.fillRect(-20,20,15,11);ctx.fillRect(5,20,15,11);ctx.restore();}
+ ctx.fillStyle='#b3ff99';ctx.fillRect(-20+pose.left.x,20+pose.left.y,15,11);ctx.fillRect(5+pose.right.x,20+pose.right.y,15,11);ctx.restore();}
 function drawCheckpoint(o,t){const x=o.x-game.camera,y=o.y;if(x<-50||x>WIDTH+50)return;ctx.save();ctx.translate(x,y);ctx.strokeStyle='#d0d7ed';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-75);ctx.stroke();ctx.shadowColor='#ffec8c';ctx.shadowBlur=game.checkpoint===o.id?28:9;ctx.fillStyle=game.checkpoint===o.id?'#f9e58d':'#f2a7d0';ctx.beginPath();ctx.moveTo(0,-76);ctx.lineTo(15,-59);ctx.lineTo(0,-42);ctx.lineTo(-15,-59);ctx.closePath();ctx.fill();ctx.restore();}
 function draw(){const d=Math.min(window.devicePixelRatio||1,2); if(canvas.width!==Math.round(WIDTH*d)||canvas.height!==Math.round(HEIGHT*d)){canvas.width=Math.round(WIDTH*d);canvas.height=Math.round(HEIGHT*d);}ctx.setTransform(d,0,0,d,0,0);const t=motionReduced?0:game.time;sky(t,game.camera);
  if(image){ctx.save();ctx.globalAlpha=.53;const iw=image.naturalWidth,ih=image.naturalHeight,scale=Math.max(WIDTH/iw,HEIGHT/ih);let sw=iw*scale,sh=ih*scale;ctx.drawImage(image,(WIDTH-sw)/2,(HEIGHT-sh)/2,sw,sh);ctx.restore();}
@@ -38,10 +40,10 @@ function draw(){const d=Math.min(window.devicePixelRatio||1,2); if(canvas.width!
  if(game.completed){ctx.fillStyle='#111022bd';make(0,0,WIDTH,HEIGHT);round(195,140,570,265,25,'#23173e');text('WORLD COMPLETE ✦',247,233,42,'#d8ff8f');text('You brought the Spark Trail to life.',248,285,22,'#f5def9');text('Restart to play again',340,336,20,'#c4b7ed');}
 }
 function metrics(){ $('score').textContent=String(game.score).padStart(4,'0');$('collected').textContent=game.collected.length+' / '+game.world.objects.filter(o=>o.type==='gem').length;$('deaths').textContent=String(game.deaths).padStart(2,'0');$('checkpoint').textContent=game.checkpoint?'LIT':'NONE';$('status').textContent=game.completed?'✨ World complete. You win!':mode==='edit'?'Tap the canvas to '+(tool==='erase'?'remove':'place')+' an object.':paused?'Paused. Resume when ready.':'Reach the portal. Collect sparks along the way.';}
-function frame(now){if(!last)last=now;const elapsed=Math.min((now-last)/1000,.12);last=now;accumulator=Math.min(accumulator+elapsed,.12);while(accumulator>=1/60){if(mode==='play'&&!paused){step(game,keys,1/60);if(recording.length<36000)recording.push({left:keys.left,right:keys.right,jump:keys.jump});}accumulator-=1/60;}draw();metrics();requestAnimationFrame(frame);}requestAnimationFrame(frame);
+function frame(now){if(!last)last=now;const elapsed=Math.min((now-last)/1000,.12);last=now;accumulator=Math.min(accumulator+elapsed,.12);while(accumulator>=1/60){if(mode==='play'&&!paused){step(game,keys,1/60);advanceGait(gait,game.player,game.deaths);if(recording.length<36000)recording.push({left:keys.left,right:keys.right,jump:keys.jump});}accumulator-=1/60;}draw();metrics();requestAnimationFrame(frame);}requestAnimationFrame(frame);
 $('play').onclick=()=>{paused=false;$('pause').textContent='Ⅱ Pause game';mode='play';$('mode-label').textContent='PLAY MODE';$('play').classList.add('primary');$('edit').classList.remove('primary');canvas.focus();};
 $('edit').onclick=()=>{mode='edit';$('mode-label').textContent='EDIT MODE';$('edit').classList.add('primary');$('play').classList.remove('primary');};
-$('reset').onclick=()=>{let w=game.world;game=newGame(w);recording=[];paused=false;$('pause').textContent='Ⅱ Pause game';};
+$('reset').onclick=()=>{let w=game.world;game=newGame(w);gait=newGait();recording=[];paused=false;$('pause').textContent='Ⅱ Pause game';};
 $('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'▶ Resume game':'Ⅱ Pause game';};
 for(const b of document.querySelectorAll('.tool'))b.onclick=()=>{tool=b.dataset.tool;document.querySelectorAll('.tool').forEach(a=>a.classList.toggle('active',a===b));mode='edit';$('mode-label').textContent='EDIT MODE';};
 const mapping={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'jump',KeyW:'jump',Space:'jump'};
@@ -74,7 +76,7 @@ $('scene-file').addEventListener('change',async e=>{
    safe.source={kind:'original-demo',referenceName:null,visualExtraction:'none',rightsConfirmed:true};
    image=null;imageFile=null;$('image-info').textContent='Scene restored. Re-import the reference image separately if licensed.';
   }else{image=null;imageFile=null;}
-  game=newGame(safe);recording=[];$('world-title').textContent=safe.title;mode='play';paused=false;
+  game=newGame(safe);gait=newGait();recording=[];$('world-title').textContent=safe.title;mode='play';paused=false;
   $('status').textContent='Valid, untrusted JSON safely imported. Original image not included.';
  }catch(err){$('status').textContent='Scene rejected: '+err.message;}finally{e.target.value='';}
 });
