@@ -1,0 +1,30 @@
+name: OSIE metadata gate
+on:
+  pull_request:
+    paths:
+      - "docs/osie/**"
+      - "tools/osie_validate.py"
+      - "tests/test_osie_validate.py"
+      - ".github/workflows/osie-metadata.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/osie/**"
+      - "tools/osie_validate.py"
+      - "tests/test_osie_validate.py"
+      - ".github/workflows/osie-metadata.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Python offline regression checks
+        run: python3 -m unittest discover -s tests -p test_osie_validate.py -v
+      - name: Validate candidate manifests
+        run: python3 tools/osie_validate.py docs/osie/registry/*.json
