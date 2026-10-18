@@ -37,13 +37,13 @@ A creator should be able to describe a bounded spatial scenario, receive a repro
 ## What tests falsify
 
 - Unit and regression checks: invalid/colliding rooms, diagonal paths, intersecting obstacles, valid/invalid route endpoints, deterministic outputs, old scene schemas.
-- Seeded metamorphic tests: 200 reproducible generated geometry cases, with every claimed `clear` independently passed through the exported checker. Reversing an obstacle-free route must preserve length. A route can never be shorter than its Manhattan lower bound.
+- Seeded metamorphic tests: 200 reproducible generated geometry cases checked through the exported checker. An additional **separately authored analytic oracle** in `tests/oracle.test.mjs` evaluates 250 generated cases with an independent interval-overlap implementation plus checks synthesized pair clearances. This reduces shared-code verification blind spots but is still not an external or formal proof. Reversing an obstacle-free route preserves its length; results cannot be shorter than the Manhattan lower bound.
 - Solver trichotomy tests: feasible, demonstrably finite-domain infeasible, budget-exhausted/unknown. Never relabel unknown as unsat.
 - GitHub CI: Node.js 22 `npm run check` and `npm test`. Manual browser UI smoke test runs in an offline Chromium harness; no live hosted route has been certified.
 
 ## What remains research work
 
-1. **Oracle evaluation:** compare answers on a public synthetic corpus against a separately implemented geometric validator and an optimization baseline (e.g. exact mixed-integer model where feasible). Save counterexamples and seed numbers.
+1. **Oracle evaluation:** compare answers on a public synthetic corpus against an externally reviewed geometric validator and an optimization baseline (e.g. exact mixed-integer model where feasible). Save counterexamples and seed numbers.
 2. **Continuous geometry:** exact predicates with independently reviewed computational geometry libraries; arbitrary polygons, rotations, topology and clearance proofs.
 3. **True robot path planning:** kinodynamics, swept volumes, turn radius, dynamic obstacles, localization uncertainty, and simulator-ground-truth, then external robotics expert review. Until then: visualization and offline layout reasoning only.
 4. **Human accessibility and building compliance:** standards-specific requirements, country/region and licensed professionals. No automated building-code or access certification.

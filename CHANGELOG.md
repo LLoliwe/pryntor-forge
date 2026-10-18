@@ -12,5 +12,5 @@
 - Static clearance-aware orthogonal routing with mm-quantized coordinates and a rechecking route validator.
 - Enumerated finite-domain layout synthesis with SAT / UNSAT-within-grid / UNKNOWN distinctions and reproducible search certificates.
 - Sampled robustness sensitivity, visible browser path overlays and exportable evidence.
-- Local research examples, CLI commands, deterministic metamorphic regression checks and documented modelling limitations.
+- Local research examples, CLI commands, deterministic metamorphic regression checks (plus a separately authored 250-case geometric oracle) and documented modelling limitations.
 - Explicit refusal to imply true robotics safety, physical simulation, architectural approval or peer-reviewed guarantees.
