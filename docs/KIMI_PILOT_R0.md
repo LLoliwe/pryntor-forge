@@ -86,3 +86,73 @@ Reproduce: `npm test` and `npm run check`. Original 30 gate tests plus 15 separa
 authored independent regression tests and 6 replay tests pass, along with 8 existing
 FORGE tests: 59 total. See `KIMI_INDEPENDENT_AUDIT_20261018.txt` for the 20-category
 dispositions and explicit activation refusal. No Kimi response has been benchmarked.
+
+Independent replay follow-up added 9 adversarial tests. Full repository: **68/68**
+passing (60 Kimi tests plus 8 FORGE tests). Source/model labels remain metadata,
+not provider-authenticated provenance. No live benchmark leaderboard exists.
+
+## Capability-to-product selection, checked 18 October 2026
+
+| Existing product | Candidate capability and test | Current alternative / actual result |
+| --- | --- | --- |
+| ZOWIBO | K3 vision/code review of sanitized interaction traces; compare pointercancel repair and continuity critique blind | Existing local/browser tests and approved original art remain authoritative; Kimi not accessed, no art uploaded, no quality gain measured |
+| FORGE | K3 long-context scene contracts and K2.8 Preview coding through Code entitlement | Existing deterministic parser/schema validators work offline; no evidence Kimi outperforms them |
+| Recover | K2.7 Code tool-schema work and synthetic onboarding decisions | Existing sandbox/permissioned implementation remains baseline; no financial actions authorized |
+| Robotics | K3 failure-trace diagnosis and delayed-controller test design | Offline simulation and frozen seeds remain evidence; no physical control or safety certification |
+| Studios/LVL7 | K3 visual/document critique, continuity and water conservation test design | Existing rig/physics/render tools remain necessary; no verified native animation-production replacement |
+
+Official model pricing (USD per million tokens): K3 input 3, output 15, cached input
+0.30; K2.7 Code input 0.95, output 4, cached input 0.19. Rates do not prove account
+access, grant or final invoice. https://platform.kimi.ai/ . Existing chat, Code,
+agent/plugin quotas and Open Platform billing must be verified separately.
+
+Projects preserve instructions/chats and read files on demand; Work projects are
+separate and do not sync with Chat. Current help lists two free Chat projects,
+50 files/project, 100 MB/file and 500 MB free project storage. Account entitlement
+unverified. https://www.kimi.com/en/help/features/project
+
+Web plugins support MCP and Skills; Work/Code support more plugin components.
+OAuth and region/plan availability vary, and some calls consume credits. No
+connector has been installed. https://www.kimi.com/en/help/plugins-and-skills/overview
+
+K3 Swarm is documented, but consumes several times ordinary Agent credits and
+requires eligible membership. It has not been run. Useful hypothesis: bounded
+multilingual public-source discovery, not unattended production orchestration.
+https://www.kimi.com/en/help/agent/agent-swarm
+
+API supports function/tool calls and JSON output; K3 documentation includes strict
+schema output, always-on thinking and fixed sampling parameters. Official web
+search is being updated and is not recommended for near-term production use.
+Do not equate valid JSON with correct geometry. The general API help reports no
+native TTS/ASR and no self-service fine-tuning. Sources:
+https://platform.kimi.ai/docs/guide/kimi-k3-quickstart
+https://www.kimi.com/en/help/kimi-api/api-model-capabilities
+
+Open K3 weights use a custom licence, not ordinary MIT: notice requirements,
+large Model-as-a-Service commercial agreement threshold and large-product
+attribution conditions apply, with specified internal/official-product exceptions.
+No weights installed or compute rented. Exact licence must be pinned before any
+hosting. https://huggingface.co/moonshotai/Kimi-K3/blob/main/LICENSE
+
+Privacy is surface-specific: Chat help permits de-identified training use and
+states mainland-China storage; API help says inputs/outputs are not used for
+training. Those summaries do not establish Pryntor's signed processing agreement
+or API retention/deletion/residency guarantees. Approved sanitized public context
+only until clearance. Sources:
+https://www.kimi.com/en/help/others/data-usage
+https://www.kimi.com/en/help/kimi-api/api-data-security
+
+The documented RMB15 signup voucher requires a mainland-China mobile number and
+expires after three months. Do not assume South African entitlement. Official
+sales form offers South Africa, but sponsorship and programme eligibility still
+need written confirmation. https://www.kimi.com/en/help/kimi-api/api-free-trial
+
+## Controlled OMEGA loop
+
+Discover public sources, challenge with separately authored probes, implement only
+in this existing draft, test frozen fixtures, obtain independent verification,
+retain failed cases and hashes. Run only explicit offline commands now. No live
+transport, scheduler, retries, hosted service or paid fallback exists. Credentials,
+no-overage grant and owner/reviewer approval remain prerequisites to live work.
+Model comparison must conceal oracle labels, freeze identical prompts for both
+providers and keep creative/product reviewer scoring separate from policy labels.

@@ -58,3 +58,19 @@ Updated evaluation 13: LIMITED OFFLINE PASS for reproduced field-validation regr
 Updated evaluation 18: PARTIAL, reproducible fixtures and byte integrity verified; model/version provenance, truthful live measurements and artifact/result binding not independently established.
 Updated evaluation 19: LIMITED OFFLINE PASS, independent adversarial rerun completed; no production or merge approval.
 All other 20-category dispositions remain as above. Activation NOT APPROVED. No real Kimi/baseline performance comparison was run by this reviewer. No API spend or private asset disclosure occurred.
+
+OFFLINE REPLAY RUNNER INDEPENDENT REVIEW
+Requested reference remote commit: 89e2780b8996ea65cd26534bab577520fbafa17b.
+Inspected src/kimi-offline-runner.mjs and all 40 portfolio-v1.json fixtures.
+Runner SHA256 a1c0b7cc8e85b65f150b71ccc0b64cc7f4fd1a46f42c4664ce2a80b39420cb0f
+Fixtures SHA256 2ed40c8a629b8d345e498ee58bcb615d2863989e26fd034697d8f63d1ba9abcb
+Authored independent regression test/kimi-runner-independent.test.mjs SHA256 cfc75806e2f6c5b3b5c00edcae9874621fabd77be0b94884c19619605640edae
+Ran node --test test/kimi*test.mjs. Outcome 60/60 passing: previous 45, six implementation runner tests, nine independent runner regressions.
+
+Verified: all 40 IDs unique, five tracks, synthetic markers; sparse fixture even with recomputed hash rejected; sparse response rejected; swapped records rejected; changed prompt with old hash rejected; changed metadata changes output hash; duplicate fixture/record IDs prevent readiness; forbidden tool, billed cent and invalid latency each block; recorded-provider kind retains liveModelResultsVerified=false and independentApproval=false.
+
+No new implementation defect found within tested plain-JSON replay scope. Authoritative host must supply envelope and fixture registry. A malicious host can recompute hashes or falsify charge metadata; replay integrity is not authentication. Source revision has 40-hex syntax validation, no repository existence or ancestry verification. Model version is required text, not a provider-attested model identifier. Latencies are imported metadata, not measured here. There is no live transport, no credential access and no hosted agent runtime.
+
+The 40 cases are policy-label fixtures, not product engineering benchmarks. No actual source patches, deterministic geometry, animation continuity frames, physics traces, merchant decisions against ledgers or controller simulation outputs are evaluated. Oracle copies expected labels intentionally and its perfect replay score demonstrates plumbing only. Abstention/reject label ambiguity and visible answers mean this is not a held-out model capability test. Do not report 40/40 as Kimi performance or a tangible ZOWIBO improvement. Gate/runner hardening is the tangible engineering improvement.
+
+Independent review remains LIMITED OFFLINE VALIDATION. Activation/merge/production approval NOT GRANTED.
