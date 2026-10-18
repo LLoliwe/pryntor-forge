@@ -17,5 +17,23 @@
   "id": "openmoss-moss-image-base",
   "name": "MOSS-Image-Base",
   "canonical_url": "https://huggingface.co/OpenMOSS-Team/MOSS-Image-Base",
-  "notes": "Official model metadata observed 2026-10-18. 5.082B parameters. Model card licence tag Apache-2.0. Pin immutable revision, separately review model weights, inference pipeline trust_remote_code, dependencies and dataset rights. No GPU trial or install performed."
+  "notes": "Official model metadata observed 2026-10-18. 5.082B parameters. Model card licence tag Apache-2.0. Pin immutable revision, separately review model weights, inference pipeline trust_remote_code, dependencies and dataset rights. No GPU trial or install performed.",
+  "source_revision": "c1355e6b1986dfe8fba3c0455783a05899212342",
+  "source_review_evidence": "https://github.com/LLoliwe/pryntor-forge/actions/runs/39116249641",
+  "unresolved_high_risk_count": 2,
+  "source_review_scope": "Only README.md, LICENSE, requirements.txt, inference_runtime.py and pyproject.toml reviewed; no complete dependency/code or model-weight audit.",
+  "high_risk_signals": [
+    {
+      "file": "README.md",
+      "line": 153,
+      "pattern": "trust_remote_code=True",
+      "interpretation": "static review signal, not exploit proof"
+    },
+    {
+      "file": "inference_runtime.py",
+      "line": 31,
+      "pattern": "trust_remote_code=True",
+      "interpretation": "static review signal, not exploit proof"
+    }
+  ]
 }
