@@ -36,9 +36,8 @@ jobs:
     timeout-minutes: 4
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: actions/setup-node@49933ea5288ca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: '22'
+      - name: Confirm runner Node supports the offline guard
+        run: node --version
       - name: Check independent static QA policy fixtures
         run: |
           node --check tools/osie_git_qa_guard.mjs
