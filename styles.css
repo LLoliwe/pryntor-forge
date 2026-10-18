@@ -13,3 +13,20 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .sidebar{overflow-y:auto}.stats{margin-top:0}.main .stage{min-height:380px}
 @media(max-width:760px){.research-panel{padding:16px}.research-grid{grid-template-columns:repeat(4,1fr)}.research-grid label{font-size:9px}}
 @media(max-width:420px){.research-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* Mobile-first viewing mode for the public FORGE preview. */
+@media(max-width:760px){
+ .app{display:flex;flex-direction:column;min-height:100vh;max-height:none;overflow:visible}
+ .main{order:0;height:730px;min-height:730px;flex:none}
+ .sidebar{order:1;overflow:visible}
+ .inspector{order:2;display:flex;min-height:350px;border-left:0;border-top:1px solid #33463b}
+ .topbar{height:51px}.stage{min-height:410px}.stage-top{top:18px;left:18px}
+ .stage h1{font-size:34px}.stage-bottom{left:18px;right:18px;bottom:20px}
+ .view-help{bottom:65px;left:18px}
+ .bottom{height:auto;min-height:190px;padding:14px;flex:none}.exporthead{margin-bottom:10px}
+ .exportgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+ .export{padding:10px 6px;gap:5px;align-items:flex-start}.exportglyph{width:18px;font-size:14px}
+ .export b{font-size:10px;white-space:normal}.export .arrow{display:none}
+ .exportextra{padding:8px 2px;gap:8px}.import{padding:5px 8px}
+ .inspector .inspectpreview{height:140px}
+}
