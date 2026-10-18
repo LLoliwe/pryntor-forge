@@ -63,6 +63,21 @@ class RadarTests(unittest.TestCase):
         ]}, 2)
         self.assertEqual(rows[0]["licence_claim"], "MIT")
 
+    def test_gitflic_token_uses_documented_authentication(self):
+        calls = []
+        def fake(url, headers):
+            calls.append(headers)
+            return []
+        radar.discover(["robotics"], ["gitflic"], 1,
+                       fetch=fake, env={"GITFLIC_TOKEN": "TEST_ONLY"})
+        self.assertEqual(calls[0]["Authorization"], "token TEST_ONLY")
+
+    def test_gitflic_missing_token_never_invents_access(self):
+        headers = []
+        radar.discover(["robotics"], ["gitflic"], 1,
+                       fetch=lambda u, h: headers.append(h) or [], env={})
+        self.assertEqual(headers, [{}])
+
     def test_permission_failure_not_mislabeled_as_empty_catalogue(self):
         from urllib.error import HTTPError
         def blocked(url, headers):
