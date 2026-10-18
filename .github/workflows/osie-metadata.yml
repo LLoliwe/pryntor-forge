@@ -33,6 +33,16 @@ jobs:
         run: python3 tools/osie_radar.py
       - name: Prove snapshot utility does not download by default
         run: python3 tools/osie_stage.py --repository OpenMOSS/MOSS-Image --revision c1355e6b1986dfe8fba3c0455783a05899212342 --destination "${RUNNER_TEMP}/osie-moss"
+      - name: Prove MOSS Base and SFT cannot pass GPU/runtime gates without verified evidence
+        run: |
+          for model in base sft; do
+            if python3 tools/osie_moss_preflight.py --manifest "docs/osie/registry/moss-image-${model}.json"; then
+              echo "SECURITY FAIL: unapproved MOSS model unexpectedly passed preflight"
+              exit 1
+            else
+              test "$?" -eq 3
+            fi
+          done
 
   stage-source-only:
     needs: verify-intake
