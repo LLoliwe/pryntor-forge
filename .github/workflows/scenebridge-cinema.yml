@@ -1,0 +1,41 @@
+name: SceneBridge Cinema isolated install and build
+on:
+  push:
+    paths:
+      - 'experiments/scenebridge-cinema/**'
+      - '.github/workflows/scenebridge-cinema.yml'
+  pull_request:
+    paths:
+      - 'experiments/scenebridge-cinema/**'
+      - '.github/workflows/scenebridge-cinema.yml'
+permissions:
+  contents: read
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: experiments/scenebridge-cinema
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies in clean CI
+        run: npm install --no-audit --no-fund
+      - name: Verify declarations and source contract
+        run: npm test
+      - name: Build actual production bundle
+        run: npm run build
+      - name: Report installed top-level dependencies
+        run: npm ls --depth=0
+      - name: Preserve exact resolved lockfile and bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: scenebridge-cinema-build
+          path: |
+            experiments/scenebridge-cinema/package-lock.json
+            experiments/scenebridge-cinema/dist/
+          retention-days: 7
+          if-no-files-found: error
