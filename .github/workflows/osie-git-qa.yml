@@ -1,0 +1,47 @@
+name: OSIE Git QA guardrail pair (R0)
+on:
+  pull_request:
+    paths:
+      - '.coderabbit.yaml'
+      - '.gemini/styleguide.md'
+      - 'tools/rusteerio_*.mjs'
+      - 'tools/osie_git_qa_guard.mjs'
+      - 'tests/rusteerio_*.test.mjs'
+      - 'tests/osie_git_qa_guard.test.mjs'
+      - '.github/workflows/osie-git-qa.yml'
+      - '.github/workflows/rusteerio-opt-in.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: osie-git-qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  correctness-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Test parser contracts and adversarial inputs offline
+        run: |
+          node --check tools/rusteerio_extract.mjs
+          node --test tests/rusteerio_extract.test.mjs tests/rusteerio_adversarial.test.mjs
+      - name: Confirm provenance limitations explicitly
+        run: grep -q 'This is NOT a DNS-resolution' tools/rusteerio_extract.mjs
+  supply-chain-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288ca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Check independent static QA policy fixtures
+        run: |
+          node --check tools/osie_git_qa_guard.mjs
+          node --test tests/osie_git_qa_guard.test.mjs
+      - name: Validate least-privilege workflow and native package gates
+        run: node tools/osie_git_qa_guard.mjs
