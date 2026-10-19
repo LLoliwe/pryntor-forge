@@ -1,24 +1,43 @@
 # Pryntor
 
-**Independent technology, original worlds, and responsible AI.**
+**Independent intelligence. Original worlds. African perspective. Global ambition.**
 
-Pryntor is a South African technology and creative company developing original products across education, interactive entertainment, software, and applied research.
+Pryntor is a South African technology and creative company building software, interactive learning experiences, original entertainment, and applied AI systems. We are working towards an independent AI stack that can be evaluated, adapted, and deployed for real products.
 
-## AI research interests
+This is our research and engineering presence on Hugging Face. Our focus is useful technology, reproducible evidence, and responsible collaboration, rather than unsupported model claims.
 
-- **Open-weight and independent AI:** Reproducible evaluation, model adaptation, and deployment architectures that reduce single-vendor dependence.
-- **African-language technology:** Careful multilingual evaluation and human-led research with qualified speakers, appropriate consent, and linguistic context.
-- **Creative and interactive intelligence:** Research into multimodal systems and tools for original characters, visual production, games, and educational experiences.
-- **Reliability and evidence:** Transparent benchmarks, documented failures, privacy-conscious data handling, licensing checks, and responsible disclosure.
+## Research directions
 
-## Publication principles
+| Area | Our focus |
+| --- | --- |
+| **African languages and speech** | Multilingual NLP, speech interfaces, culturally grounded evaluation, and research involving qualified language experts. |
+| **Independent and efficient AI** | Open-weight model evaluation, fine-tuning, inference efficiency, reliable agent systems, and provider-independent deployment. |
+| **Vision, media, and interaction** | Multimodal understanding, original creative tools, character and scene consistency, and interactive 3D experiences. |
+| **Education and embodied systems** | Accessible learning tools, trustworthy reasoning, privacy-first assistive AI, and robotics research. |
 
-A model, dataset, or demo is only released when its ownership and rights, model and data licences, privacy, security, suitability, and independent evaluation have been reviewed. Pryntor does not publish confidential client data, children's personal information, proprietary unreleased assets, or private credentials.
+## What we publish
 
-Research plans and evaluations are not equivalent to a released proprietary model. Public releases, when available, will include model or dataset cards, provenance, limitations, evaluation methodology, and applicable licence terms.
+When ready for public release, work hosted here may include:
 
-## Contact
+- **Models:** clearly attributed base models and adaptations, with pinned versions, reproducible evaluations, limitations, and relevant licences.
+- **Datasets:** only material with documented collection rights, consent where required, appropriate privacy controls, and clear usage terms.
+- **Spaces:** working demos with a stated scope, resource requirements, and safety limitations.
+- **Research and benchmarks:** methods, test cases, failure analysis, and evidence that distinguishes a prototype from a released capability.
 
-For technical collaboration, research discussions, or responsible disclosure: **partnerships@pryntor.co.za**
+An area of interest is not a claim that Pryntor has already trained or released a model in that area. We distinguish original architectures, fine-tuned upstream weights, and application-level integrations.
 
-_Pryntor's public Hugging Face organisation card. Publication requires a verified organisation, authorised account access, and explicit founder sign-off._ 
+## Engineering principles
+
+**Evidence over claims.** Measure accuracy, reliability, latency, resource use, reproducibility, and genuine product impact.
+
+**Rights and safety by design.** Respect licences, contributors, languages, privacy, children's safety, and ownership of creative work.
+
+**Independent thinking, open collaboration.** Evaluate approaches from around the world and contribute useful findings where publication is authorised.
+
+## Connect
+
+**Website:** [pryntor.co.za](https://pryntor.co.za)
+
+**Research and partnerships:** partnerships@pryntor.co.za
+
+*Built in South Africa. Developed for real-world use.*
