@@ -1,0 +1,42 @@
+name: OSIE Worldwide Open Source Radar (R0)
+on:
+  schedule:
+    # Daily 06:17 UTC = 08:17 SAST. Activates only after approved merge to main.
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: osie-global-radar
+  cancel-in-progress: true
+
+jobs:
+  discover-public-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Checkout exact reviewed main ref
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Discover global candidate metadata, no code execution, no weights, no GPU
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+          GITFLIC_TOKEN: ${{ secrets.GITFLIC_TOKEN }}
+        run: |
+          python3 tools/osie_radar.py --live --limit 5 --min-healthy-sources 3 \
+            --query "image generation" \
+            --query "game engine" \
+            --query "robotics" \
+            --query "speech" \
+            --sources "github,huggingface,gitee,modelscope,gitflic" \
+            > osie-global-radar.json
+          python3 -c 'import json; d=json.load(open("osie-global-radar.json")); print("Discovered unverified candidates:",len(d["candidates"])); print("Provider availability:",[(x["source"], x["state"]) for x in d["provider_health"]]); print("No candidate installed:",d["attestation"])'
+      - name: Short-retention evidence, no automatic publications
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: osie-radar-daily-public-metadata
+          path: osie-global-radar.json
+          retention-days: 3

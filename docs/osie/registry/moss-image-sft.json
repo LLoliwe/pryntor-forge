@@ -1,0 +1,44 @@
+{
+  "type": "model",
+  "upstream_code_url": "https://github.com/OpenMOSS/MOSS-Image",
+  "revision": null,
+  "declared_license": "Apache-2.0 (upstream declared; independent audit pending)",
+  "license_reviewed": false,
+  "data_rights_reviewed": false,
+  "security_reviewed": false,
+  "cost_reviewed": false,
+  "estimated_cash_cost_zar": null,
+  "spend_approval_evidence": null,
+  "benchmark_evidence": [],
+  "rollback_tested": false,
+  "independent_reviewer": null,
+  "author": "OSIE intake (metadata only)",
+  "status": "intake",
+  "id": "openmoss-moss-image-sft",
+  "name": "MOSS-Image-SFT",
+  "canonical_url": "https://huggingface.co/OpenMOSS-Team/MOSS-Image-SFT",
+  "notes": "Official model metadata observed 2026-10-18. 5.082B parameters and Apache-2.0 licence tag. Candidate for image typography/layout benchmark against current baseline. No GPU trial or commercial approval performed.",
+  "source_revision": "c1355e6b1986dfe8fba3c0455783a05899212342",
+  "source_review_evidence": "https://github.com/LLoliwe/pryntor-forge/actions/runs/39116249641",
+  "unresolved_high_risk_count": 2,
+  "source_review_scope": "Only README.md, LICENSE, requirements.txt, inference_runtime.py and pyproject.toml reviewed; no complete dependency/code or model-weight audit.",
+  "high_risk_signals": [
+    {
+      "file": "README.md",
+      "line": 153,
+      "pattern": "trust_remote_code=True",
+      "interpretation": "static review signal, not exploit proof"
+    },
+    {
+      "file": "inference_runtime.py",
+      "line": 31,
+      "pattern": "trust_remote_code=True",
+      "interpretation": "static review signal, not exploit proof"
+    }
+  ],
+  "model_snapshot_bytes_estimate": 27200000000,
+  "snapshot_estimate_source": "https://huggingface.co/OpenMOSS-Team/MOSS-Image-Base/tree/main",
+  "compute_access": "UNVERIFIED_NO_GPU_JOB",
+  "weights_installed": false,
+  "inference_run": false
+}

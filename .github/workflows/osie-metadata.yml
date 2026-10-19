@@ -1,0 +1,143 @@
+name: OSIE global intake and isolated source staging
+on:
+  pull_request:
+    paths:
+      - "docs/osie/**"
+      - ".github/actions/osie-review/**"
+      - "tools/osie_*.py"
+      - "tests/test_osie_*.py"
+      - ".github/workflows/osie-metadata.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/osie/**"
+      - ".github/actions/osie-review/**"
+      - "tools/osie_*.py"
+      - "tests/test_osie_*.py"
+      - ".github/workflows/osie-metadata.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Check out pinned action
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Offline gate regressions for registry, global radar and source-stage
+        run: python3 -m unittest discover -s tests -p 'test_osie_*.py' -v
+      - name: Validate actual candidate manifests
+        run: python3 tools/osie_validate.py docs/osie/registry/*.json
+      - name: Validate central organisation opt-in manifest (offline)
+        run: python3 .github/actions/osie-review/validate.py docs/osie/adoption.json
+      - name: Prove global radar does not make requests by default
+        run: python3 tools/osie_radar.py
+      - name: Prove snapshot utility does not download by default
+        run: python3 tools/osie_stage.py --repository OpenMOSS/MOSS-Image --revision c1355e6b1986dfe8fba3c0455783a05899212342 --destination "${RUNNER_TEMP}/osie-moss"
+      - name: Prove MOSS Base and SFT cannot pass GPU/runtime gates without verified evidence
+        run: |
+          for model in base sft; do
+            if python3 tools/osie_moss_preflight.py --manifest "docs/osie/registry/moss-image-${model}.json"; then
+              echo "SECURITY FAIL: unapproved MOSS model unexpectedly passed preflight"
+              exit 1
+            else
+              test "$?" -eq 3
+            fi
+          done
+
+  stage-source-only:
+    needs: verify-intake
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Stage exact immutable MOSS review files in scratch, no archive/weights
+        run: |
+          python3 tools/osie_sparse_stage.py \
+            --repository OpenMOSS/MOSS-Image \
+            --revision c1355e6b1986dfe8fba3c0455783a05899212342 \
+            --file README.md \
+            --file LICENSE \
+            --file requirements.txt \
+            --file inference_runtime.py \
+            --file pyproject.toml \
+            --destination "${RUNNER_TEMP}/osie-moss" \
+            --stage
+      - name: Static-risk scan of actual staged MOSS source (signals are not clearance)
+        run: python3 tools/osie_source_audit.py "${RUNNER_TEMP}/osie-moss"
+      - name: Demonstrate staged model is not activated
+        run: |
+          test -f "${RUNNER_TEMP}/osie-moss/README.md"
+          echo "SOURCE_ONLY: no pip install, model weights or inference; scratch discarded at job end"
+
+  regional-source-stage:
+    needs: verify-intake
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: China | Pin Qwen Image source and licence for independent review
+        run: |
+          python3 tools/osie_sparse_stage.py --repository QwenLM/Qwen-Image --revision 6b5e1f5cec987d404be5ac6657db3b9aacb56a89 --file README.md --file LICENSE --destination "${RUNNER_TEMP}/qwen-image" --stage
+      - name: Russia | Pin Kandinsky-4 source and licence for independent review
+        run: |
+          python3 tools/osie_sparse_stage.py --repository ai-forever/Kandinsky-4 --revision 7506103f897f6f48278fe9b6b71f1471ea374679 --file README.md --file LICENSE --destination "${RUNNER_TEMP}/kandinsky" --stage
+      - name: India | Pin IndicTrans2 source and licence for independent review
+        run: |
+          python3 tools/osie_sparse_stage.py --repository AI4Bharat/IndicTrans2 --revision 4f08e39cc6bf13cd62e2445dc725f22bff1a9219 --file README.md --file LICENSE --destination "${RUNNER_TEMP}/indictrans2" --stage
+      - name: Urdu NLP | Pin UrduHack source and licence for independent review
+        run: |
+          python3 tools/osie_sparse_stage.py --repository urduhack/urduhack --revision f7f0aa26ef516ce7907429dff0863577190beca7 --file README.md --file LICENSE --destination "${RUNNER_TEMP}/urduhack" --stage
+      - name: US visual segmentation | Pin SAM2 source and licence for independent review
+        run: |
+          python3 tools/osie_sparse_stage.py --repository facebookresearch/sam2 --revision 2b90b9f5ceec907a1c18123530e92e794ad901a4 --file README.md --file LICENSE --destination "${RUNNER_TEMP}/sam2" --stage
+
+      - name: Existing games | Source-only pin of Unity motion matching (NOT installed)
+        run: |
+          python3 tools/osie_sparse_stage.py --repository JLPM22/MotionMatching --revision 35fc8ee9a0fd97f12de458ea81eaef7c8219d87a --file README.md --file LICENSE --destination "${RUNNER_TEMP}/motion-matching" --stage
+          python3 tools/osie_source_audit.py "${RUNNER_TEMP}/motion-matching"
+      - name: Existing Robotics/FORGE | Source-only pin of official three.js (NOT installed)
+        run: |
+          python3 tools/osie_sparse_stage.py --repository mrdoob/three.js --revision 0978e2b62e53654ebe1a2c3032ebee0a4981c701 --file README.md --file LICENSE --destination "${RUNNER_TEMP}/three-js" --stage
+          python3 tools/osie_source_audit.py "${RUNNER_TEMP}/three-js"
+      - name: Existing Engineering | Source-only pin of official REA (NOT installed)
+        run: |
+          python3 tools/osie_sparse_stage.py --repository morluto/rea --revision c12d9eda87aa5a022ee7e18ea96d8d03bfd12e96 --file README.md --file LICENSE --destination "${RUNNER_TEMP}/rea" --stage
+          python3 tools/osie_source_audit.py "${RUNNER_TEMP}/rea"
+      - name: Assert real upstream licence files were staged in ephemeral runner
+        run: |
+          for p in motion-matching three-js rea; do
+            test -s "${RUNNER_TEMP}/$p/LICENSE"
+            test -s "${RUNNER_TEMP}/$p/README.md"
+          done
+          echo "SOURCE_ONLY: 3 pinned official Git repositories staged and scanned; NO installation or runtime approval"
+
+      - name: Static-risk scans of five region-diverse staged sources
+        run: |
+          for project in qwen-image kandinsky indictrans2 urduhack sam2; do
+            echo "SOURCE: $project"
+            python3 tools/osie_source_audit.py "${RUNNER_TEMP}/$project"
+          done
+
+  global-metadata-probe:
+    needs: verify-intake
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Worldwide public metadata probe, never download/execute candidates
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 tools/osie_radar.py --live --limit 3 --min-healthy-sources 3 --query "image" --query "robotics" --sources "github,huggingface,gitee,modelscope,gitflic" > "${RUNNER_TEMP}/osie-radar.json"
+          python3 -c 'import json,sys; p=json.load(open(sys.argv[1])); print("CANDIDATES",len(p["candidates"])); print("PROVIDER_HEALTH",json.dumps(p["provider_health"],ensure_ascii=False)); print("MODEL_EXECUTION",p["attestation"])' "${RUNNER_TEMP}/osie-radar.json"
+      - name: Upload provider-status and metadata evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: osie-global-metadata-only
+          path: ${{ runner.temp }}/osie-radar.json
+          retention-days: 7

@@ -1,0 +1,14 @@
+name: Pryntor OSIE R0 intake gate
+description: Validate a project-specific, non-executing OSS intake manifest. Does not install external code or authorize releases.
+inputs:
+  manifest:
+    description: Path of the local JSON OSIE intake manifest
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Verify Pryntor OSIE metadata contract
+      shell: bash
+      env:
+        OSIE_INPUT_MANIFEST: ${{ inputs.manifest }}
+      run: python3 "$GITHUB_ACTION_PATH/validate.py" "$OSIE_INPUT_MANIFEST"
