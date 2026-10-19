@@ -13,6 +13,23 @@
 5. **PROFILE DRAFT:** The screenshot showed **AI & ML interests: None defined yet**, and no organisation card. Proposed interests: open-weight foundation models, evaluation and reliability, African-language NLP, multimodal and voice systems, AI for original learning and interactive media, and privacy-first tooling. Use [HUGGING_FACE_ORG_CARD.md](./HUGGING_FACE_ORG_CARD.md) as a prepared profile card source. The official Hub documentation states organisation cards are the `README.md` in a **public Space named README**, or can be edited via the organization's profile. This requires a separate deliberate public publishing action and write access. Do not claim it is published yet.
 6. **RECORD EVIDENCE:** Put confirmation of role, billing, permissions and MFA into the private PRY-349 operational receipt without exposing payment details or credentials publicly. A reviewer independent of the author verifies the final gates.
 
+## Approved public profile fields, ready for authenticated publishing
+
+- **Organisation display name:** Pryntor (already visible).
+- **Public handle:** Pryntor (verified at https://huggingface.co/Pryntor).
+- **Category:** Company (already visible).
+- **Website:** https://pryntor.co.za (visible in founder screenshot, separate website availability not audited).
+- **Country or location (only if a location field exists):** South Africa.
+- **Short description / bio (where a supported text field exists):** `South African technology and creative company advancing independent AI, African-language technology, interactive learning, and multimodal systems.`
+- **AI & ML interests (select supported platform terms, without implying any published capability):** Natural Language Processing; Multilingual AI; Text Generation; Speech Recognition; Text-to-Speech; Computer Vision; Multimodal AI; Robotics; AI for Education; Small Language Models.
+- **Public organisation card:** Paste the entire Markdown body of [HUGGING_FACE_ORG_CARD.md](./HUGGING_FACE_ORG_CARD.md), commit as the README.md of the organisation's public Space named `README`, or use the Hub's built-in create/edit organisation card workflow.
+- **Logo:** Preserve the current existing Pryntor logo unless the founder explicitly approves a new asset. Do not invent a new visual identity or upload a placeholder.
+- **Membership:** Do not invite people or claim security controls are active without verifying the appropriate owner/admin settings.
+
+To publish: while logged in to https://huggingface.co/Pryntor, use the organisation card creation/edit control, set the owning organisation to Pryntor and visibility to Public, paste Markdown, save, then inspect the public organisation page from a logged-out view. The organisation card is intentionally **not** a model release or production Space; do not activate GPU hardware, external APIs or paid infrastructure. Check the exact UI before committing any change.
+
+**Publish permission state:** the ChatGPT Hugging Face OAuth connection is `read-repos` only and exposes no organisation-card write action. Work requiring a write-capable session remains blocked; staging the source Markdown in GitHub is not publication to the Hugging Face Hub.
+
 ## R0 and independent-model guardrails
 
 - **Organisation only:** Setup does not grant permission to run a job, GPU, Inference Endpoint, or paid Space. Hugging Face's Jobs and upgraded Space hardware are pay-as-you-go on the current plan comparison. Keep all off unless cash cost is explicitly approved in Pryntor governance.
