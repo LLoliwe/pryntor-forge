@@ -1,46 +1,50 @@
-# Context.dev public-web evidence pilot | Pryntor OSIE
+# Context.dev public-source evidence pilot for Pryntor FORGE OSIE
 
-**25 October 2026: opt-in engineering pilot, not live or production.** Existing Engineering project, OSIE PRY-350, independent review PRY-348, FORGE PR #18. This does not create a new venture, repo, subscription or scheduled job.
+**Status: experimental, off by default; no production integration.** Implemented in the existing OSIE review branch, not in the default application workflow. This public guide documents the source-only adapter and does not contain private account details or grant terms.
 
-## Intended use
+## Separation of responsibilities
 
-Context.dev provides optional **metered** public-web source acquisition. Pryntor FORGE's Rusteerio adapter remains the local-only HTML parser. The research layer preserves retrieved URLs, timestamps, request IDs, source snippets and credit metadata, marks all claims unverified, and routes accepted evidence through existing OSIE quality and PRY-AIG-001 agent-integrity gates.
+Context.dev is a hosted, potentially metered way to acquire public web evidence; Rusteerio is the optional local parser of supplied HTML. Neither is a factual-verification engine. Outputs are treated as untrusted, provisional third-party content. Public source citations must be checked against original pages by independent reviewers before supporting any conclusion.
 
-First evaluation: public technical release notes, known developer documentation, licensed educational references and publicly available research. Per-venture approval before applying to ZOWIBO, LVL7, Robotics, VEC, Tirisano or Recover. Never use child, customer, payment, internal credential, private workspace or patient information as web-search inputs.
+This optional pilot is for already-public technical documentation, developer releases, licensed educational resources and scientific research references. **Never** submit nonpublic repository material, customer or child data, secrets, cookies, payment records, patient data or confidential documents to a hosted web-research system.
 
-## Credits and pricing (read on 25 October 2026)
+## Relevant public documentation
 
-- Context.dev founder confirmed 25,000 complimentary pilot credits in an 18 October email, with 50 concurrent batches and 25 concurrent API requests.
-- A 19 October broadcast stated another 50,000 credits had been added. This is **75,000 reported allocated** in total, NOT a verified live balance.
-- Free tier now advertises 1,000 monthly credits and no overage. Grants above free allowance are preserved on monthly refill per vendor docs. Verify current entitlement, expiry, auto-topup OFF and plan in the account dashboard.
-- Base search costs 1 credit per up to 10 returned results. The pilot intentionally does not request Markdown, highlights, structured JSON or PDF OCR. Those increase cost.
-- A user-owned connection is essential. Composio's instant-account connection is NOT the same as Pryntor's sponsored credits and may charge cash. It must NOT be used for this pilot.
-- Founder-approved R0 constraint: no new payment method, subscription, overages, auto topup or automatic recurring charges.
+- Credits, overage behavior and pricing: https://docs.context.dev/account/credits
+- Search REST API contract: https://docs.context.dev/api-reference/web-scraping/search
+- Read-only usage endpoint: https://docs.context.dev/api-reference/usage/retrieve
+- Cursor integration guide: https://docs.context.dev/integrations/cursor-plugin
 
-References: https://docs.context.dev/account/credits ; https://docs.context.dev/api-reference/web-scraping/search ; https://docs.context.dev/api-reference/usage/retrieve ; https://docs.context.dev/integrations/cursor-plugin
+Prices and plan limits are provider-controlled and may change. Before using any hosted API, check the actual account plan, current balance, hard spending limits, optional auto-reload and commercial-use rights. Do not rely on a promotional grant, assumed rollover or third-party aggregator to establish a zero-cost call. A user-owned Context.dev connection and a third-party aggregator's instant account can have **different meters and payers**.
 
-## Implementation delivered in this review branch
+## Implemented adapter and tests
 
-- tools/contextdev_evidence.mjs: zero-dependency, network-disabled-by-default single-query adapter. Up to 10 results, one base-credit estimate, only HTTPS public-domain result URLs, no duplicate links, source metadata retained.
-- tests/contextdev_evidence.test.mjs: nine deterministic, offline unit tests exercising disabled by default, absent keys, oversized/malformed inputs, unsafe URLs, deduplication, provenance, billing metadata, mocked one-request execution, and secret-redacted failures.
-- No keys, customer data, local config changes, installed dependencies, hosted API calls or production product changes. Running tests does not spend credits.
+- \`tools/contextdev_evidence.mjs\` is dependency-free. It plans or performs **one** short source-only search (up to 10 results). It has no automatic crawling, batch processing, scheduled monitors, enrichment, result downloading or production hooks.
+- \`searchPublicEvidence\` will refuse all live calls unless \`enabled: true\` and an own-account API key are passed by a reviewed caller. Do not place the enable flag in default app, CI or scheduled agents.
+- Result normalization requires provider-reported credit consumption metadata and blocks the pilot if usage exceeds its one-credit limit. It deduplicates links, accepts only externally formatted HTTPS domain URLs, records observed time and request ID, and labels all snippets \`UNVERIFIED_WEB_SNIPPET\`.
+- URL filtering covers returned hyperlinks only; it is **not** an SSRF-safe recursive fetch implementation and must never be used as a crawl permission check.
+- \`tests/contextdev_evidence.test.mjs\` provides nine deterministic test cases using an injected in-memory transport. All tests avoid live network activity and metered API calls.
 
-## Acceptance and staged activation
+## Run the offline checks
 
-1. Run offline tests with node --test tests/contextdev_evidence.test.mjs and npm test. Record the commit SHA and independent CI result.
-2. Founder completes already-open Cursor Context.dev OAuth from the official Context.dev connection page, then checks MCP tools from a fresh Cursor chat. Cursor OAuth is distinct from application REST API keys.
-3. In the Context.dev dashboard, verify remaining credits, Free plan, auto-topup disabled, pilot entitlement and any expiry. Context.dev's read-only GET /v1/org/usage can corroborate the balance without using credits.
-4. On an approved server-side environment, store CONTEXT_DEV_API_KEY as a secret. Never commit or print keys. Use an approved account-owned connection, not Composio instant-account metering.
-5. After account-level R0 controls and owner authorization, execute **one** public test of 5 results. Compare provider key_metadata.credits_consumed and credits_remaining with the usage dashboard. Any unexpected credit count, auth failure, missing metadata or unexpected site content is a STOP gate.
-6. Hand-verify source URLs and claims against original pages. Compare citation fidelity, false positives, source freshness, duplicates, latency and usable verified results per consumed credit against existing baselines. Target at least 20 diverse public fixtures before wider adoption.
-7. Do not enable live use in FORGE main, production services, scheduled agents, auto-outreach or automatic web-content publication without independent security/legal review and acceptance from each venture owner.
+\`\`\`bash
+node --test tests/contextdev_evidence.test.mjs
+npm test
+\`\`\`
 
-## First source watchlists (proposed, not yet created)
+Test success establishes only that the offline code behaves as expected on fixtures. It does not establish source accuracy, production adoption, entitlement, billability, OAuth completion, browser compatibility or independent security approval.
 
-- OSIE / PRIME: official tool changelogs, open-source licences, model releases and reproducible benchmark datasets.
-- ZOWIBO: official children's game release notes and developer docs, public family-safety/accessibility sources; do not ingest third-party art as training content.
-- LVL7: official South African educational resources, open licensed content and education research; independently confirm curriculum versions and copyright.
-- Robotics / VEC: official datasets, peer-reviewed research and publicly documented methods; sources cannot replace real physics or biology acceptance tests.
-- Growth: public competitor/product changes supporting existing authorized Pryntor service lines, with independent human review before any client promise.
+## Controlled acceptance steps
 
-**Disposition:** Code staged, offline pilot locally tested 9/9. Context.dev provider calls 0 in this work. Live integration, balance and production acceptance remain unverified.
+1. Verify the review branch and its actual CI status on the proposed commit. Require independent review and version-matched evidence.
+2. In the account owner’s dashboard, independently verify an account-owned connection, credit balance, plan, auto-topup/spend settings, expiry and applicable terms. Keep actual grant, credit balance, invoice and billing details in **private** company records.
+3. Store any REST API key exclusively in a server-side secret manager. Never commit it, print it or pass it to public content.
+4. After express, narrowly scoped budget authorization, allow one query returning up to five public search results. Compare actual provider credit usage with the account dashboard. Abort on a mismatch, unverified connection or unexpected charges.
+5. Human-review source accuracy, date, provenance, licences, duplication, unsafe content and relevance. Compare against a free/offline baseline on at least 20 preregistered public fixtures.
+6. Promote only after accepted engineering, legal, privacy, quality and cost gates. No self-approved release, automatic merge, scheduled spend, publication or third-party outreach.
+
+## Research candidates (not active automation)
+
+Official tool changelogs, open-source licence updates, public benchmark datasets, scientific articles and public learning standards can be reviewed. Do not scrape login-protected resources, copy copyrighted art, ingest private research, or assume website terms grant redistribution rights.
+
+**Disposition:** Review-branch code and offline tests exist. No real Context.dev request was run during this pilot staging, and the account-owned authorization and production approval remain separate requirements.
