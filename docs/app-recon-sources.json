@@ -1,0 +1,291 @@
+{
+  "schemaVersion": 1,
+  "reviewedDate": "2026-10-18",
+  "tools": [
+    {
+      "id": "website-cloner-template",
+      "url": "https://github.com/JCodesMore/ai-website-cloner-template",
+      "license": "MIT",
+      "use": "Web layout inspection and agent workflow inspiration",
+      "restriction": "Reference only; inspect dependencies, website terms and visual rights first",
+      "installed": false,
+      "autoEnabled": false
+    },
+    {
+      "id": "open-lovable",
+      "url": "https://github.com/firecrawl/open-lovable",
+      "license": "MIT",
+      "use": "React web reconstruction research",
+      "restriction": "Requires Firecrawl, model and hosted sandbox credentials with possible charges; block unattended use",
+      "installed": false,
+      "autoEnabled": false
+    },
+    {
+      "id": "replica-skill",
+      "url": "https://github.com/Jakeschincariol/replica-skill",
+      "license": "MIT",
+      "use": "Reverse-engineering and QA workflow inspiration",
+      "restriction": "Review every agent skill instruction and integration before use",
+      "installed": false,
+      "autoEnabled": false
+    },
+    {
+      "id": "ai-app-cloner",
+      "url": "https://github.com/Birkenpapier/ai-app-cloner",
+      "license": "MIT",
+      "use": "Expo/React Native screenshot-to-app experiment",
+      "restriction": "Experimental; screenshots do not prove app functionality or asset rights",
+      "installed": false,
+      "autoEnabled": false
+    },
+    {
+      "id": "android-agent",
+      "url": "https://github.com/ghost-in-the-droid/android-agent",
+      "license": "MIT",
+      "use": "Optional mobile-device QA research",
+      "restriction": "Security restriction: default API unauthenticated, binds 0.0.0.0:5055; do not expose or connect production phones or accounts",
+      "installed": false,
+      "autoEnabled": false
+    },
+    {
+      "id": "clone-wars",
+      "url": "https://github.com/GorvGoyl/Clone-Wars",
+      "license": "AGPL-3.0",
+      "use": "External app-reference index",
+      "restriction": "The index license is not the license of individual linked projects; do not copy code blindly",
+      "installed": false,
+      "autoEnabled": false
+    }
+  ],
+  "serviceEvaluations": {
+    "reviewedDate": "2026-11-03",
+    "scope": "Advisory service evidence for existing Pryntor Exchange work; not an installation manifest or execution authorisation.",
+    "canonicalIssues": [
+      "https://linear.app/pryntor/issue/PRY-345/app-recon-001-shared-app-reconstruction-and-device-proof-quality-kit",
+      "https://linear.app/pryntor/issue/PRY-414/px-001-pryntor-exchange-prove-demand-rights-and-evaluation-quality"
+    ],
+    "framework": "https://linear.app/pryntor/document/pry-ccc-001-maximum-lawful-copying-cloning-and-creation-v11-e4e2f18f967f",
+    "entries": [
+      {
+        "id": "anima",
+        "serviceTerms": "Proprietary service terms; not assigned an open-source licence",
+        "use": "Candidate for capturing authorised authenticated CRM pages or DOM elements and generating editable frontend code.",
+        "status": "PUBLIC_EDITOR_OBSERVED_SIGNED_OUT_NO_GENERATION",
+        "connector": "NO_NATIVE_CONNECTOR_EXPOSED",
+        "installed": false,
+        "autoEnabled": false,
+        "captureTested": false,
+        "generationTested": false,
+        "codeExportTested": false,
+        "restriction": "Public editor controls were observed in the supported browser while signed out. No authentication, extension installation, capture, generation or code export completed. URL cloning sees public initial-load content; authenticated pages require the extension. Actual account credits/export entitlement are unverified.",
+        "sources": [
+          "https://docs.animaapp.com/docs/starting-from-a-url",
+          "https://docs.animaapp.com/docs/chrome-extension-clone-private-internal-pages",
+          "https://docs.animaapp.com/docs/capture-elements",
+          "https://www.animaapp.com/pricing",
+          "https://support.animaapp.com/en/articles/11180835-multi-screen-export-flows-in-playground-and-dev-mode",
+          "https://dev.animaapp.com/"
+        ],
+        "browserObservation": {
+          "url": "https://dev.animaapp.com/",
+          "observedDate": "2026-11-03",
+          "state": "SIGNED_OUT",
+          "controlsObserved": [
+            "Clone Website",
+            "Image To App",
+            "Login"
+          ],
+          "authenticationCompleted": false
+        }
+      },
+      {
+        "id": "html-to-design",
+        "serviceTerms": "Proprietary service terms; not assigned an open-source licence",
+        "use": "Alternative for authorised private-page and multi-state flow capture as editable Figma references.",
+        "status": "DOCUMENTATION_VERIFIED_EXECUTION_NOT_TESTED",
+        "connector": "NO_NATIVE_CONNECTOR_EXPOSED",
+        "installed": false,
+        "autoEnabled": false,
+        "captureTested": false,
+        "generationTested": false,
+        "codeExportTested": false,
+        "restriction": "No account, extension installation, capture or export verified. Public free allowance is 10 imports per 30 days; actual balance and multi-step flow usage are unverified. Design capture does not establish working application behaviour.",
+        "sources": [
+          "https://html.to.design/docs/import-private-page/",
+          "https://html.to.design/docs/extension-record-flow/",
+          "https://html.to.design/home/"
+        ]
+      },
+      {
+        "id": "firecrawl-hosted",
+        "serviceTerms": "Existing hosted connector and its service terms; no source code installation or licence adoption",
+        "use": "Capture official public product references and review the owned Exchange application through actual browser interaction.",
+        "status": "PUBLIC_REFERENCE_AND_OWN_APP_BROWSER_REVIEW_VERIFIED",
+        "connector": "CONNECTED_VERIFIED_BY_ROOT",
+        "installed": false,
+        "autoEnabled": false,
+        "captureTested": true,
+        "generationTested": false,
+        "codeExportTested": false,
+        "creditSnapshot": {
+          "observedDate": "2026-11-03",
+          "beforeCapture": 19217,
+          "afterCapture": null,
+          "evidence": "19,217 existing credits were verified at initial reference capture, with two scrape receipts each reporting one credit. Later shared-account reads were18,601 and18,201; differences are not attributed exclusively to this work.",
+          "recordedCaptureCreditsUsed": 2
+        },
+        "captureReceipts": [
+          {
+            "sourceURL": "https://help.folk.app/en/articles/6044821-create-custom-pipeline-views",
+            "observedDate": "2026-11-03",
+            "targetHTTPStatus": 200,
+            "scrapeId": "01a1a265-bba0-773d-af11-751e54feb5ed",
+            "creditsUsed": 1,
+            "formats": [
+              "branding",
+              "markdown",
+              "screenshot",
+              "images"
+            ],
+            "screenshot": {
+              "viewportWidth": 1440,
+              "viewportHeight": 1000,
+              "fullPage": true,
+              "urlReturned": true,
+              "persistentScreenshotArtifactVerified": false
+            }
+          },
+          {
+            "sourceURL": "https://help.folk.app/en/articles/9790806-folk-data-model",
+            "observedDate": "2026-11-03",
+            "targetHTTPStatus": 200,
+            "scrapeId": "01a1a265-bc6b-70cb-acd0-711ec1330f15",
+            "creditsUsed": 1,
+            "screenshot": {
+              "viewportWidth": 1440,
+              "viewportHeight": 1000,
+              "fullPage": true,
+              "urlReturned": true,
+              "persistentScreenshotArtifactVerified": false
+            }
+          }
+        ],
+        "restriction": "These are public official help-centre references. Returned branding describes the help centre, not authenticated CRM CSS. No authenticated Folk account capture, automatic clone, code generation or new subscription occurred. Provider screenshot URLs are temporary; persistent screenshot files were not verified in this receipt. Later own-application review used actual backend code and fictional data via intercepted transport. It does not establish production hosting, physical-device acceptance, authenticated Folk capture or model quality.",
+        "sources": [
+          "https://docs.firecrawl.dev/features/scrape",
+          "https://help.folk.app/en/articles/6044821-create-custom-pipeline-views",
+          "https://help.folk.app/en/articles/9790806-folk-data-model",
+          "https://docs.firecrawl.dev/features/interact"
+        ],
+        "authenticatedAppCaptureTested": false,
+        "automaticCloneExecuted": false,
+        "ownApplicationBrowserReview": {
+          "observedDate": "2026-11-03",
+          "application": "Pryntor Exchange",
+          "baseCommit": "de338faed0eb7e01f9b732c1a321cc1758b58be8",
+          "sourceDerivation": "Five unchanged baseline files gained one terminal LF during staging; exact runtime hashes identify the executed snapshot.",
+          "browser": "Chrome153.0.8010.52 on Linux",
+          "transport": "Owned exchange.test requests dispatch to the actual Preview WSGI application through Playwright interception.",
+          "fixtureAPIResponses": false,
+          "checksPassed": 18,
+          "viewportCaptures": 7,
+          "viewportWidths": [
+            1440,
+            768,
+            390
+          ],
+          "physicalDeviceTested": false,
+          "publicHTTPSTransportTested": false,
+          "deployed": false,
+          "evidenceURL": "https://github.com/LLoliwe/agent-exchange-preview/blob/66ae9293366bdf502212626a5caf557ada6d5d4e/preview/evidence/2026-11-03-browser/initial/result.json"
+        },
+        "laterNativeTaskRetry": {
+          "httpStatus": 429,
+          "result": "NOT_RUN_PROVIDER_CONCURRENCY_LIMIT",
+          "maxConcurrentJobs": 2,
+          "alternativeUsed": "tinyfish-browser"
+        },
+        "nativeCookObservation": {
+          "sourceURL": "https://nativecook.dev/blocks/drawer-cabinet-sheet/",
+          "videoURL": "https://media.nativecook.dev/videos/drawer-cabinet-sheet-a3b909c2.iphone-18-pro.mp4",
+          "durationSeconds": 8,
+          "framesInspectedAtSeconds": [
+            0.1,
+            3.5,
+            7.5
+          ],
+          "scope": "Source frame inspection only; decorative assets and motion parity not imported or claimed.",
+          "evidenceURL": "https://github.com/LLoliwe/agent-exchange-preview/blob/66ae9293366bdf502212626a5caf557ada6d5d4e/preview/evidence/2026-11-03-browser/nativecook/observation.json"
+        }
+      },
+      {
+        "id": "tinyfish-browser",
+        "serviceTerms": "Existing wallet account and hosted service terms; no new subscription or open-source licence adoption.",
+        "use": "Actual Chromium and Playwright review of the existing Pryntor Exchange application when another browser service is unavailable.",
+        "status": "OWN_APPLICATION_BROWSER_REVIEW_VERIFIED",
+        "connector": "EXISTING_CONNECTED_ACCOUNT_VERIFIED",
+        "installed": false,
+        "autoEnabled": false,
+        "captureTested": true,
+        "generationTested": false,
+        "codeExportTested": false,
+        "automaticCloneExecuted": false,
+        "authenticatedAppCaptureTested": false,
+        "sources": [
+          "https://www.tinyfish.ai/browser",
+          "https://docs.tinyfish.ai/"
+        ],
+        "creditSnapshot": {
+          "observedDate": "2026-11-03",
+          "currency": "USD",
+          "before": "94.600000",
+          "afterLocalConnectionAttempt": "94.596966",
+          "afterBrowserWork": "94.592878",
+          "observedWalletDecrease": "0.007122",
+          "attribution": "Shared-account balance comparison, not an itemised receipt or exclusive attribution.",
+          "browserRatePerMinute": "0.002000",
+          "autoReloadConfigured": false,
+          "pendingTopUp": false,
+          "newSubscriptionOrPayment": false,
+          "trialExpiryVerified": false,
+          "evidenceURL": "https://github.com/LLoliwe/agent-exchange-preview/blob/66ae9293366bdf502212626a5caf557ada6d5d4e/preview/evidence/2026-11-03-browser/tinyfish-credit-use.json",
+          "afterBrowserObservedAt": "2026-11-03T21:24:15.136Z"
+        },
+        "ownApplicationBrowserReview": {
+          "application": "Pryntor Exchange",
+          "observedDate": "2026-11-03",
+          "browser": "Chromium147.0.7727.6",
+          "client": "Python Playwright1.62.0 in the existing Composio remote runtime",
+          "locale": "en-ZA",
+          "timezone": "Africa/Johannesburg",
+          "transport": "Only owned exchange.test requests are intercepted and dispatched to the actual Preview WSGI application.",
+          "fixtureAPIResponses": false,
+          "sourceCommitAtInvocation": null,
+          "exactSourceHashCount": 14,
+          "checksPassed": 32,
+          "viewportCaptures": 9,
+          "viewportWidths": [
+            1440,
+            768,
+            390
+          ],
+          "javascriptErrors": 0,
+          "failedApplicationRequests": 0,
+          "physicalDeviceTested": false,
+          "publicHTTPSTransportTested": false,
+          "deployed": false,
+          "ownedSessionsClosed": true,
+          "evidenceURL": "https://github.com/LLoliwe/agent-exchange-preview/blob/66ae9293366bdf502212626a5caf557ada6d5d4e/preview/evidence/2026-11-03-browser/native-task-final/result.json",
+          "sourceBindingCommit": "66ae9293366bdf502212626a5caf557ada6d5d4e"
+        },
+        "observedLimitations": [
+          "Local CDP resolution failed with EAI_AGAIN; the supported remote runtime connected successfully.",
+          "A provider-sensitive Playwright predicate conflicted with the unchanged application CSP; direct DOM polling resolved the harness incompatibility.",
+          "An actual browser run exposed a missing inbox refresh after principal change; the handler and regression were fixed before the32-check pass.",
+          "Remote runtime restarts can lose intermediate files; retrieve and verify actual result/capture bytes promptly."
+        ],
+        "restriction": "Verified existing-credit QA of owned code and fictional records. No automatic authenticated clone, real inbox connection, model-quality result or production/device acceptance is established."
+      }
+    ]
+  }
+}
