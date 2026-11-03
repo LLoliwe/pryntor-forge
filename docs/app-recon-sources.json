@@ -56,5 +56,130 @@
       "installed": false,
       "autoEnabled": false
     }
-  ]
+  ],
+  "serviceEvaluations": {
+    "reviewedDate": "2026-11-03",
+    "scope": "Advisory service evidence for existing Pryntor Exchange work; not an installation manifest or execution authorisation.",
+    "canonicalIssues": [
+      "https://linear.app/pryntor/issue/PRY-345/app-recon-001-shared-app-reconstruction-and-device-proof-quality-kit",
+      "https://linear.app/pryntor/issue/PRY-414/px-001-pryntor-exchange-prove-demand-rights-and-evaluation-quality"
+    ],
+    "framework": "https://linear.app/pryntor/document/pry-ccc-001-maximum-lawful-copying-cloning-and-creation-v11-e4e2f18f967f",
+    "entries": [
+      {
+        "id": "anima",
+        "serviceTerms": "Proprietary service terms; not assigned an open-source licence",
+        "use": "Candidate for capturing authorised authenticated CRM pages or DOM elements and generating editable frontend code.",
+        "status": "PUBLIC_EDITOR_OBSERVED_SIGNED_OUT_NO_GENERATION",
+        "connector": "NO_NATIVE_CONNECTOR_EXPOSED",
+        "installed": false,
+        "autoEnabled": false,
+        "captureTested": false,
+        "generationTested": false,
+        "codeExportTested": false,
+        "restriction": "Public editor controls were observed in the supported browser while signed out. No authentication, extension installation, capture, generation or code export completed. URL cloning sees public initial-load content; authenticated pages require the extension. Actual account credits/export entitlement are unverified.",
+        "sources": [
+          "https://docs.animaapp.com/docs/starting-from-a-url",
+          "https://docs.animaapp.com/docs/chrome-extension-clone-private-internal-pages",
+          "https://docs.animaapp.com/docs/capture-elements",
+          "https://www.animaapp.com/pricing",
+          "https://support.animaapp.com/en/articles/11180835-multi-screen-export-flows-in-playground-and-dev-mode",
+          "https://dev.animaapp.com/"
+        ],
+        "browserObservation": {
+          "url": "https://dev.animaapp.com/",
+          "observedDate": "2026-11-03",
+          "state": "SIGNED_OUT",
+          "controlsObserved": [
+            "Clone Website",
+            "Image To App",
+            "Login"
+          ],
+          "authenticationCompleted": false
+        }
+      },
+      {
+        "id": "html-to-design",
+        "serviceTerms": "Proprietary service terms; not assigned an open-source licence",
+        "use": "Alternative for authorised private-page and multi-state flow capture as editable Figma references.",
+        "status": "DOCUMENTATION_VERIFIED_EXECUTION_NOT_TESTED",
+        "connector": "NO_NATIVE_CONNECTOR_EXPOSED",
+        "installed": false,
+        "autoEnabled": false,
+        "captureTested": false,
+        "generationTested": false,
+        "codeExportTested": false,
+        "restriction": "No account, extension installation, capture or export verified. Public free allowance is 10 imports per 30 days; actual balance and multi-step flow usage are unverified. Design capture does not establish working application behaviour.",
+        "sources": [
+          "https://html.to.design/docs/import-private-page/",
+          "https://html.to.design/docs/extension-record-flow/",
+          "https://html.to.design/home/"
+        ]
+      },
+      {
+        "id": "firecrawl-hosted",
+        "serviceTerms": "Existing hosted connector and its service terms; no source code installation or licence adoption",
+        "use": "Capture public official Folk product references for the existing Exchange implementation and comparison evidence.",
+        "status": "PUBLIC_OFFICIAL_REFERENCE_CAPTURE_VERIFIED",
+        "connector": "CONNECTED_VERIFIED_BY_ROOT",
+        "installed": false,
+        "autoEnabled": false,
+        "captureTested": true,
+        "generationTested": false,
+        "codeExportTested": false,
+        "creditSnapshot": {
+          "observedDate": "2026-11-03",
+          "beforeCapture": 19217,
+          "afterCapture": null,
+          "evidence": "Root verified 19,217 credits before capture and two scrape receipts costing one credit each. The post-capture balance was not re-queried.",
+          "recordedCaptureCreditsUsed": 2
+        },
+        "captureReceipts": [
+          {
+            "sourceURL": "https://help.folk.app/en/articles/6044821-create-custom-pipeline-views",
+            "observedDate": "2026-11-03",
+            "targetHTTPStatus": 200,
+            "scrapeId": "01a1a265-bba0-773d-af11-751e54feb5ed",
+            "creditsUsed": 1,
+            "formats": [
+              "branding",
+              "markdown",
+              "screenshot",
+              "images"
+            ],
+            "screenshot": {
+              "viewportWidth": 1440,
+              "viewportHeight": 1000,
+              "fullPage": true,
+              "urlReturned": true,
+              "persistentScreenshotArtifactVerified": false
+            }
+          },
+          {
+            "sourceURL": "https://help.folk.app/en/articles/9790806-folk-data-model",
+            "observedDate": "2026-11-03",
+            "targetHTTPStatus": 200,
+            "scrapeId": "01a1a265-bc6b-70cb-acd0-711ec1330f15",
+            "creditsUsed": 1,
+            "screenshot": {
+              "viewportWidth": 1440,
+              "viewportHeight": 1000,
+              "fullPage": true,
+              "urlReturned": true,
+              "persistentScreenshotArtifactVerified": false
+            }
+          }
+        ],
+        "restriction": "These are public official help-centre references. Returned branding describes the help centre, not authenticated CRM CSS. No authenticated Folk account capture, automatic clone, code generation or new subscription occurred. Provider screenshot URLs are temporary; persistent screenshot files were not verified in this receipt.",
+        "sources": [
+          "https://docs.firecrawl.dev/features/scrape",
+          "https://help.folk.app/en/articles/6044821-create-custom-pipeline-views",
+          "https://help.folk.app/en/articles/9790806-folk-data-model"
+        ],
+        "authenticatedAppCaptureTested": false,
+        "automaticCloneExecuted": false
+      }
+    ]
+  }
 }
+
