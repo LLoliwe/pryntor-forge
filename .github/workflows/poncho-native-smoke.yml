@@ -8,7 +8,7 @@ permissions:
   contents: read
 jobs:
   poncho-smoke:
-    runs-on: macos-15
+    runs-on: macos-14
     timeout-minutes: 8
     steps:
       - name: Verify macOS
