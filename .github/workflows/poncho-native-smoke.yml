@@ -1,93 +1,22 @@
 name: Poncho native macOS smoke
-
 on:
   push:
-    branches:
-      - test/poncho-public-macos-20261104
-    paths:
-      - .github/workflows/poncho-native-smoke.yml
+    branches: [test/poncho-public-macos-20261104]
+    paths: [.github/workflows/poncho-native-smoke.yml]
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   poncho-smoke:
     runs-on: macos-15
     timeout-minutes: 8
     steps:
-      - name: Verify native macOS runtime
+      - name: Verify macOS
         shell: bash
-        run: |
-          set -euo pipefail
-          echo "=== MAC_RUNTIME ==="
-          sw_vers
-          uname -sm
-          id -un
-
-      - name: Download and verify official Poncho installer
+        run: sw_vers && uname -sm && id -un
+      - name: Download Poncho
         shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/poncho-smoke"
-          curl --fail --location --max-time 90 --proto '=https' --tlsv1.2             https://agentodo.dev/download             -o "$RUNNER_TEMP/poncho-smoke/Poncho.dmg"
-          printf '%s  %s
-'             'e133461fef6fa6819e0efe61b8b8bb05f94aa0b59dd45770bcb0515da0822016'             "$RUNNER_TEMP/poncho-smoke/Poncho.dmg" | shasum -a 256 -c -
-          file "$RUNNER_TEMP/poncho-smoke/Poncho.dmg"
-
-      - name: Mount, inspect, verify and launch Poncho
+        run: mkdir -p "$RUNNER_TEMP/poncho" && curl --fail --location --max-time 90 --proto '=https' --tlsv1.2 https://agentodo.dev/download -o "$RUNNER_TEMP/poncho/Poncho.dmg" && echo "e133461fef6fa6819e0efe61b8b8bb05f94aa0b59dd45770bcb0515da0822016  $RUNNER_TEMP/poncho/Poncho.dmg" | shasum -a 256 -c -
+      - name: Inspect and launch Poncho
         shell: bash
-        run: |
-          set -euo pipefail
-          ROOT="$RUNNER_TEMP/poncho-smoke"
-          MOUNT="$ROOT/mount"
-          mkdir -p "$MOUNT"
-          hdiutil attach -readonly -nobrowse -mountpoint "$MOUNT" "$ROOT/Poncho.dmg"
-          trap 'hdiutil detach "$MOUNT" >/dev/null 2>&1 || true' EXIT
-          APP="$(find "$MOUNT" -maxdepth 2 -type d -name 'Poncho.app' -print -quit)"
-          test -n "$APP"
-          ditto "$APP" "$ROOT/Poncho.app"
-          export APP="$ROOT/Poncho.app"
-
-          echo "=== APP_METADATA ==="
-          python3 - <<'PY'
-          import json, os, pathlib, plistlib
-          p = pathlib.Path(os.environ["APP"]) / "Contents" / "Info.plist"
-          d = plistlib.loads(p.read_bytes())
-          keys = [
-              "CFBundleIdentifier",
-              "CFBundleVersion",
-              "CFBundleShortVersionString",
-              "CFBundleExecutable",
-              "LSMinimumSystemVersion",
-          ]
-          print(json.dumps({k: d.get(k) for k in keys}, indent=2))
-          PY
-
-          echo "=== CODESIGN ==="
-          codesign --verify --deep --strict --verbose=2 "$APP"
-          codesign -dv --verbose=2 "$APP" 2>&1
-
-          echo "=== GATEKEEPER ==="
-          spctl --assess --verbose=2 --type execute "$APP"
-
-          echo "=== NATIVE_LAUNCH ==="
-          open -na "$APP"
-          sleep 10
-          pgrep -fl Poncho
-          echo "PONCHO_NATIVE_PROCESS_RUNNING=YES"
-
-          echo "=== WINDOW_DISCOVERY ==="
-          osascript -e 'tell application "System Events" to get name of every process whose name contains "Poncho"' || true
-          screencapture -x "$ROOT/poncho-screen.png" || true
-          ls -lh "$ROOT/poncho-screen.png" 2>/dev/null || true
-
-      - name: Upload nonsecret smoke evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: poncho-native-smoke-evidence
-          path: |
-            ${{ runner.temp }}/poncho-smoke/poncho-screen.png
-          if-no-files-found: ignore
-          retention-days: 1
+        run: MOUNT="$RUNNER_TEMP/poncho/mount"; mkdir -p "$MOUNT"; hdiutil attach -readonly -nobrowse -mountpoint "$MOUNT" "$RUNNER_TEMP/poncho/Poncho.dmg"; APP="$(find "$MOUNT" -maxdepth 2 -type d -name Poncho.app -print -quit)"; test -n "$APP"; codesign --verify --deep --strict --verbose=2 "$APP"; spctl --assess --verbose=2 --type execute "$APP"; open -na "$APP"; sleep 8; pgrep -fl Poncho; defaults read "$APP/Contents/Info" CFBundleIdentifier; defaults read "$APP/Contents/Info" CFBundleShortVersionString; hdiutil detach "$MOUNT"
