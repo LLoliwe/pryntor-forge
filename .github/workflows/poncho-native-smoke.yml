@@ -17,6 +17,43 @@ jobs:
       - name: Download Poncho
         shell: bash
         run: mkdir -p "$RUNNER_TEMP/poncho" && curl --fail --location --max-time 90 --proto '=https' --tlsv1.2 https://agentodo.dev/download -o "$RUNNER_TEMP/poncho/Poncho.dmg" && echo "e133461fef6fa6819e0efe61b8b8bb05f94aa0b59dd45770bcb0515da0822016  $RUNNER_TEMP/poncho/Poncho.dmg" | shasum -a 256 -c -
-      - name: Inspect and launch Poncho
+      - name: Inspect Poncho metadata and launch UI
         shell: bash
-        run: MOUNT="$RUNNER_TEMP/poncho/mount"; mkdir -p "$MOUNT"; hdiutil attach -readonly -nobrowse -mountpoint "$MOUNT" "$RUNNER_TEMP/poncho/Poncho.dmg"; APP="$(find "$MOUNT" -maxdepth 2 -type d -name Poncho.app -print -quit)"; test -n "$APP"; codesign --verify --deep --strict --verbose=2 "$APP"; spctl --assess --verbose=2 --type execute "$APP"; open -na "$APP"; sleep 8; pgrep -fl Poncho; defaults read "$APP/Contents/Info" CFBundleIdentifier; defaults read "$APP/Contents/Info" CFBundleShortVersionString; hdiutil detach "$MOUNT"
+        run: |
+          set -u
+          ROOT="$RUNNER_TEMP/poncho"
+          MOUNT="$ROOT/mount"
+          mkdir -p "$MOUNT"
+          hdiutil attach -readonly -nobrowse -mountpoint "$MOUNT" "$ROOT/Poncho.dmg"
+          APP="$(find "$MOUNT" -maxdepth 2 -type d -name Poncho.app -print -quit)"
+          test -n "$APP"
+          echo "=== SIGNATURE ==="
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          spctl --assess --verbose=2 --type execute "$APP"
+          echo "=== APP ==="
+          defaults read "$APP/Contents/Info" CFBundleIdentifier
+          defaults read "$APP/Contents/Info" CFBundleShortVersionString
+          echo "=== URL_TYPES ==="
+          plutil -extract CFBundleURLTypes json -o - "$APP/Contents/Info.plist" 2>/dev/null || true
+          echo "=== INTEROP_HINTS ==="
+          strings "$APP/Contents/MacOS/SideTodo" | grep -Ei 'license|licen[cs]e|activate|activation|codex|claude|grok|agentodo|poncho://' | head -n 120 || true
+          open -na "$APP"
+          sleep 8
+          echo "=== PROCESS ==="
+          pgrep -fl SideTodo || pgrep -fl Poncho || true
+          echo "=== WINDOWS ==="
+          osascript -e 'tell application "System Events" to tell process "SideTodo" to get {name of windows, title of every UI element of window 1}' 2>&1 || true
+          echo "=== SCREENSHOT ==="
+          screencapture -x "$ROOT/poncho-screen.png" 2>&1 || true
+          ls -lh "$ROOT/poncho-screen.png" 2>/dev/null || true
+          pkill -x SideTodo || true
+          sleep 2
+          hdiutil detach "$MOUNT" || hdiutil detach -force "$MOUNT" || true
+      - name: Upload nonsecret UI evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: poncho-ui-evidence
+          path: ${{ runner.temp }}/poncho/poncho-screen.png
+          if-no-files-found: ignore
+          retention-days: 1
